@@ -1,0 +1,82 @@
+<Window x:Class="SmartCasier.Desktop.SalesHistoryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Riwayat Transaksi — Smart Casier" Width="1050" Height="750"
+        MinWidth="850" MinHeight="600" WindowStartupLocation="CenterOwner">
+    <Grid Margin="22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Riwayat Penjualan" FontSize="23" FontWeight="SemiBold"/>
+            <TextBlock Text="Receipt lokal tersimpan · pencarian nomor struk, SKU, atau nama produk"
+                       Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0"/>
+        </StackPanel>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FilterBox" MinWidth="280" Margin="0,0,10,0"
+                     KeyDown="FilterBox_KeyDown"
+                     ToolTip="Cari nomor struk, SKU, atau nama produk. Tekan Enter."
+                     AutomationProperties.Name="Pencarian histori berdasarkan nomor struk SKU atau produk"/>
+            <Button Grid.Column="1" Content="Cari" Width="86" Click="SearchButton_Click"/>
+            <Button Grid.Column="2" Content="Muat Ulang" Width="115"
+                    Margin="0" Click="RefreshButton_Click"/>
+        </Grid>
+        <DataGrid Grid.Row="4" x:Name="HistoryGrid" ItemsSource="{Binding Sales}"
+                  SelectionChanged="HistoryGrid_SelectionChanged"
+                  AutomationProperties.Name="Daftar riwayat transaksi">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Waktu lokal" Binding="{Binding DateLabel}" Width="1.5*"/>
+                <DataGridTextColumn Header="Nomor struk" Binding="{Binding ReceiptNo}" Width="2.3*"/>
+                <DataGridTextColumn Header="Item" Binding="{Binding LineCount}" Width="0.45*"/>
+                <DataGridTextColumn Header="Total" Binding="{Binding TotalLabel}" Width="1.0*"/>
+                <DataGridTextColumn Header="Tunai" Binding="{Binding PaidLabel}" Width="1.0*"/>
+                <DataGridTextColumn Header="Kembalian" Binding="{Binding ChangeLabel}" Width="1.0*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="PageLabel" VerticalAlignment="Center"
+                       Foreground="{StaticResource MutedBrush}" Text="Menampilkan 0 transaksi"/>
+            <Button Grid.Column="1" x:Name="PrevButton" Content="Sebelumnya"
+                    Click="PrevButton_Click" IsEnabled="False"/>
+            <Button Grid.Column="2" x:Name="NextButton" Content="Berikutnya"
+                    Click="NextButton_Click" IsEnabled="False" Margin="0"/>
+        </Grid>
+        <Border Grid.Row="8" Background="#F6F9F8" BorderBrush="#D5DFDC"
+                BorderThickness="1" CornerRadius="7" Padding="12">
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="8"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                <TextBlock Text="Rincian Struk (snapshot saat pembelian)"
+                           FontWeight="SemiBold" FontSize="16"/>
+                <TextBox Grid.Row="2" x:Name="ReceiptText"
+                         Text="Pilih transaksi untuk melihat rincian." IsReadOnly="True"
+                         IsTabStop="False" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto" BorderThickness="0"
+                         Background="Transparent" FontFamily="Consolas"
+                         AutomationProperties.Name="Rincian struk transaksi terpilih"/>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="10">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock x:Name="HistoryStatus" VerticalAlignment="Center" TextWrapping="Wrap"
+                       Foreground="{StaticResource MutedBrush}" Text="Hanya baca · tidak mengubah penjualan"/>
+            <Button Grid.Column="1" Content="Tutup" IsCancel="True"
+                    Width="94" Margin="8,0,0,0"/>
+        </Grid>
+    </Grid>
+</Window>
