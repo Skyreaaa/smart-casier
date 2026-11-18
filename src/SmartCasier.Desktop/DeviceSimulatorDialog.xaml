@@ -75,7 +75,7 @@
             <StackPanel>
                 <TextBlock Text="Konfirmasi SKU (wajib sesuai barang yang dimaksud)"
                            Margin="0,0,0,5" FontWeight="SemiBold"/>
-                <TextBox x:Name="SkuBox" Text="BAUT-M8X30" MaxLength="64"
+                <TextBox x:Name="SkuBox" MaxLength="64"
                          AutomationProperties.Name="SKU untuk konfirmasi event"/>
             </StackPanel>
             <Button Grid.Column="1" Content="Tolak Event" Click="Reject_Click"

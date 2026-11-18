@@ -364,28 +364,60 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 throw new InvalidOperationException(
                     "Transaksi produk digital/jasa belum didukung dalam versi ini.");
             var addedMilli = ParseQuantity(QuantityBox.Text, selected.UnitCode);
-            var existing = Cart.FirstOrDefault(
-                row => string.Equals(row.Sku, selected.Sku, StringComparison.OrdinalIgnoreCase));
-            var nextMilli = checked((existing?.QuantityMilli ?? 0) + addedMilli);
-            if (nextMilli > selected.OnHandMilli)
-                throw new InvalidOperationException("Jumlah melebihi stok. Stok tersedia: " +
-                    QuantityLabel(selected.OnHandMilli, selected.UnitCode) + ".");
-
-            if (existing is null)
-                Cart.Add(new CartRow(selected, addedMilli));
-            else
-            {
-                existing.QuantityMilli = nextMilli;
-                // Refresh tampilan setelah pembaruan kuantitas item.
-                CartGrid.Items.Refresh();
-            }
-            ResetPendingRequest();
-            UpdateTotals();
-            ShowInfo(selected.Sku + " ditambahkan ke keranjang.");
+            AddCartQuantity(selected, addedMilli);
         }
         catch (Exception ex)
         {
             ShowError(ex.Message);
+        }
+    }
+
+    /// <summary>Shared cart path for manual input and simulated device proposals.</summary>
+    private void AddCartQuantity(ProductRow selected, long addedMilli)
+    {
+        if (selected.StockStatus == "UNTRACKED")
+            throw new InvalidOperationException("Jenis produk ini tidak didukung untuk checkout.");
+        if (addedMilli <= 0 || (selected.UnitCode == "PCS" && addedMilli % 1000 != 0))
+            throw new ArgumentException("Jumlah PCS harus bulat dan meter harus positif.");
+        var existing = Cart.FirstOrDefault(
+            row => string.Equals(row.Sku, selected.Sku, StringComparison.OrdinalIgnoreCase));
+        var nextMilli = checked((existing?.QuantityMilli ?? 0) + addedMilli);
+        if (nextMilli > selected.OnHandMilli)
+            throw new InvalidOperationException("Jumlah melebihi stok. Stok tersedia: " +
+                QuantityLabel(selected.OnHandMilli, selected.UnitCode) + ".");
+        if (existing is null) Cart.Add(new CartRow(selected, addedMilli));
+        else
+        {
+            existing.QuantityMilli = nextMilli;
+            CartGrid.Items.Refresh();
+        }
+        ResetPendingRequest();
+        UpdateTotals();
+        ShowInfo(selected.Sku + " ditambahkan ke keranjang (belum checkout).");
+    }
+
+    private void SimulatorButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null || _session is null) return;
+        try
+        {
+            var dialog = new DeviceSimulatorDialog(_database, _session) { Owner = this };
+            if (dialog.ShowDialog() != true || dialog.Result is null) return;
+            var result = dialog.Result;
+            var item = _catalog?.Search(result.Sku, 100)
+                .FirstOrDefault(x => string.Equals(x.Sku, result.Sku,
+                    StringComparison.OrdinalIgnoreCase))
+                ?? throw new InvalidOperationException("SKU hasil simulator tidak ditemukan.");
+            AddCartQuantity(new ProductRow(item), result.QuantityMilli);
+            SearchBox.Text = item.Sku;
+            ReloadProducts();
+            ShowInfo("Input virtual terkonfirmasi untuk " + item.Sku +
+                ". Periksa keranjang sebelum pembayaran.");
+        }
+        catch (Exception ex)
+        {
+            ShowError("Event simulator dikonfirmasi, tetapi item belum masuk keranjang: " +
+                ex.Message + ". Tambahkan secara manual bila diperlukan.");
         }
     }
 

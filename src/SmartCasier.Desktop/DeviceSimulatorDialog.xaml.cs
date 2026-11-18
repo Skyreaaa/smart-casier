@@ -109,12 +109,7 @@ public partial class DeviceSimulatorDialog : Window
                     StringComparison.OrdinalIgnoreCase));
             if(found is not null) SkuBox.Text=found.Sku;
         }
-        else
-        {
-            if (!string.Equals(SkuBox.Text, "KMY-MERAH", StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(SkuBox.Text, "BAUT-M8X30", StringComparison.OrdinalIgnoreCase))
-                SkuBox.Text="KMY-MERAH"; // only synthetic demo suggestion
-        }
+        else SkuBox.Text = ""; // Roll material always requires manual variant selection.
     }
 
     private void Acknowledge_Click(object sender, RoutedEventArgs e)
