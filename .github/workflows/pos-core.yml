@@ -35,6 +35,8 @@ jobs:
         run: dotnet run --project tests/SmartCasier.Safety.SelfTests/SmartCasier.Safety.SelfTests.csproj --configuration Release
       - name: Test local Admin and Cashier privileges
         run: dotnet run --project tests/SmartCasier.Auth.SelfTests/SmartCasier.Auth.SelfTests.csproj --configuration Release
+      - name: Verify virtual devices, retry, ACK and stock isolation
+        run: dotnet run --project tests/SmartCasier.Device.SelfTests/SmartCasier.Device.SelfTests.csproj --configuration Release
       - name: Smoke-test demo CLI
         shell: bash
         run: |
@@ -60,6 +62,8 @@ jobs:
         run: dotnet run --project tests/SmartCasier.Safety.SelfTests/SmartCasier.Safety.SelfTests.csproj --configuration Release
       - name: Test local Admin and Cashier privileges on Windows
         run: dotnet run --project tests/SmartCasier.Auth.SelfTests/SmartCasier.Auth.SelfTests.csproj --configuration Release
+      - name: Test virtual barcode and encoder inbox on Windows
+        run: dotnet run --project tests/SmartCasier.Device.SelfTests/SmartCasier.Device.SelfTests.csproj --configuration Release
       - name: Publish portable Windows folder (framework-dependent)
         run: dotnet publish src/SmartCasier.Desktop/SmartCasier.Desktop.csproj --configuration Release --runtime win-x64 --self-contained false --output out/windows-desktop
       - name: Upload Windows demo artifact
