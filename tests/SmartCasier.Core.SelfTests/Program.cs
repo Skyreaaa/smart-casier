@@ -34,9 +34,9 @@ static void Exec(PosDatabase db,string query)
     using var c=db.Open();using var cmd=c.CreateCommand();
     cmd.CommandText=query;cmd.ExecuteNonQuery();
 }
-Run("migration creates operational schema v4",()=>Demo(db=>
+Run("migration creates operational schema v5",()=>Demo(db=>
 {
-    Assert(Query(db,"PRAGMA user_version;")==4,"Incorrect schema version");
+    Assert(Query(db,"PRAGMA user_version;")==5,"Incorrect schema version");
     Assert(Query(db,"PRAGMA foreign_keys;")==1,"Foreign keys disabled");
     db.Initialize();
 }));
