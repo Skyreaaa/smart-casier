@@ -107,7 +107,7 @@ Test("pagination and invalid range",()=>WithDemo((db,_) =>
 Test("saved receipt price snapshot survives price change",()=>WithDemo((db,_) =>
 {
     var saleId=Sale(db);
-    new ProductCatalogEditor(db).UpdatePrice("BAUT-M8X30",9000);
+    new TestEditor(db).UpdatePrice("BAUT-M8X30",9000);
     var receipt=new SalesHistoryService(db).Receipt(saleId);
     Assert(receipt is not null && receipt.Lines[0].PriceIdr==1200,"Historical price was altered");
 }));
@@ -115,7 +115,7 @@ Test("saved receipt price snapshot survives price change",()=>WithDemo((db,_) =>
 Test("online backup includes committed receipt while WAL active",()=>WithDemo((db,folder) =>
 {
     Sale(db);
-    var safety=new DatabaseSafetyService(db);
+    var safety=new TestSafety(db);
     var backup=Path.Combine(folder,"backup-before.db");
     var info=safety.BackupToNewFile(backup);
     Assert(info.SizeBytes>0 && info.Sha256.Length==64,"Backup metadata missing");
@@ -130,14 +130,14 @@ Test("backup to pre-existing path refuses to overwrite",()=>WithDemo((db,folder)
 {
     var destination=Path.Combine(folder,"existing.db");
     File.WriteAllText(destination,"important existing user data");
-    Throws<IOException>(()=>new DatabaseSafetyService(db).BackupToNewFile(destination));
+    Throws<IOException>(()=>new TestSafety(db).BackupToNewFile(destination));
     Assert(File.ReadAllText(destination)=="important existing user data","Destination overwritten");
 }));
 
 Test("restore generates separate database preserving original",()=>WithDemo((db,folder) =>
 {
     Sale(db);
-    var safety=new DatabaseSafetyService(db);
+    var safety=new TestSafety(db);
     var source=Path.Combine(folder,"history-backup.db");
     safety.BackupToNewFile(source);
     Sale(db,"BAUT-M8X35"); // after backup
@@ -152,7 +152,7 @@ Test("restore generates separate database preserving original",()=>WithDemo((db,
 
 Test("restore to existing path is rejected without damage",()=>WithDemo((db,folder) =>
 {
-    var safety=new DatabaseSafetyService(db);
+    var safety=new TestSafety(db);
     var backup=Path.Combine(folder,"safe.db");
     safety.BackupToNewFile(backup);
     var destination=Path.Combine(folder,"in-use.db");
@@ -166,7 +166,7 @@ Test("restore rejects corrupt input before creating output",()=>WithDemo((db,fol
     var corrupt=Path.Combine(folder,"fake.db");
     File.WriteAllText(corrupt,"not SQLite");
     var restored=Path.Combine(folder,"should-not-exist.db");
-    Throws<SqliteException>(()=>new DatabaseSafetyService(db)
+    Throws<SqliteException>(()=>new TestSafety(db)
         .RestoreToNewFile(corrupt,restored));
     Assert(!File.Exists(restored),"Corrupt input created an output");
 }));
@@ -201,8 +201,34 @@ Test("fake database with user_version 3 but missing POS tables rejected",()=>Wit
 Test("cannot backup to the active database path",()=>WithDemo((db,folder) =>
 {
     var active=Path.Combine(folder,"active.db");
-    Throws<InvalidOperationException>(()=>new DatabaseSafetyService(db).BackupToNewFile(active));
+    Throws<InvalidOperationException>(()=>new TestSafety(db).BackupToNewFile(active));
 }));
 
 Console.WriteLine("SAFETY TESTS: " + pass + " passed / " + fail + " failed");
 if (fail>0) Environment.ExitCode=1;
+
+static class DemoAdmin
+{
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PosDatabase, AuthSession> Sessions = new();
+    public static AuthSession For(PosDatabase db) => Sessions.GetValue(db, current =>
+    {
+        var auth = new AuthService(current);
+        var secret = Guid.NewGuid().ToString("N") + "!Aa";
+        auth.CreateFirstAdmin("testoperator", secret);
+        return auth.Login("testoperator", secret);
+    });
+}
+sealed class TestEditor(PosDatabase db)
+{
+    private readonly ProductCatalogEditor editor = new(db);
+    public void UpdatePrice(string sku,long price)
+        => editor.UpdatePrice(sku,price,DemoAdmin.For(db));
+}
+sealed class TestSafety(PosDatabase db)
+{
+    private readonly DatabaseSafetyService safety = new(db);
+    public BackupFileInfo BackupToNewFile(string destination)
+        => safety.BackupToNewFile(destination,DemoAdmin.For(db));
+    public BackupFileInfo RestoreToNewFile(string backup,string destination)
+        => safety.RestoreToNewFile(backup,destination,DemoAdmin.For(db));
+}
