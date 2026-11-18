@@ -1,0 +1,10 @@
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+data/private/
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+Thumbs.db
