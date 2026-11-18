@@ -137,11 +137,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             var editor = new ProductCatalogEditor(_database);
             if (dialog.Operation == SkuEditDialog.EditKind.Price)
+            {
                 editor.UpdatePrice(item.Sku, dialog.Value);
+                var line = Cart.FirstOrDefault(x => string.Equals(x.Sku, item.Sku,
+                    StringComparison.OrdinalIgnoreCase));
+                if (line is not null)
+                {
+                    line.Reprice(dialog.Value);
+                    CartGrid.Items.Refresh();
+                }
+            }
             else if (dialog.Operation == SkuEditDialog.EditKind.Adjustment)
                 editor.AdjustStock(item.Sku, dialog.Value, dialog.Reason);
+            ResetPendingRequest();
+            UpdateTotals();
             ReloadProducts();
-            ShowInfo("Perubahan untuk " + item.Sku + " berhasil tersimpan.");
+            ShowInfo("Perubahan " + item.Sku + " tersimpan; nominal keranjang dihitung ulang.");
         }
         catch (Exception ex)
         {
@@ -292,7 +303,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             var request = Cart.Select(row => new SaleLineRequest(
                 row.Sku, row.QuantityMilli)).ToArray();
-            var receipt = _sales.Checkout(_requestId, request, paid);
+            var receipt = _sales.Checkout(_requestId, request, paid, CartTotal());
             Cart.Clear();
             ResetPendingRequest();
             PaidBox.Text = "0";
@@ -380,7 +391,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public string Sku { get; } = item.Sku;
         public string UnitCode { get; } = item.UnitCode;
-        public long UnitPriceIdr { get; } = item.UnitPriceIdr;
+        public long UnitPriceIdr { get; private set; } = item.UnitPriceIdr;
+        public void Reprice(long newPrice) => UnitPriceIdr = newPrice;
         public long QuantityMilli { get; set; } = quantityMilli;
         public string QuantityLabel => MainWindow.QuantityLabel(QuantityMilli, UnitCode);
         public string SubtotalLabel => Money(LineTotal(UnitPriceIdr, QuantityMilli));

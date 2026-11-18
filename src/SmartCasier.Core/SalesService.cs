@@ -20,7 +20,8 @@ public sealed class SalesService(PosDatabase database)
         string Id, string Sku, string Name, string UnitCode, long PriceIdr,
         bool FractionAllowed, long StockMilli);
 
-    public SaleReceipt Checkout(Guid requestId, IEnumerable<SaleLineRequest> requestLines, long paidIdr)
+    public SaleReceipt Checkout(Guid requestId, IEnumerable<SaleLineRequest> requestLines, long paidIdr,
+        long? expectedTotalIdr = null)
     {
         if (requestId == Guid.Empty)
             throw new ArgumentException("Sale request ID may not be empty.", nameof(requestId));
@@ -74,6 +75,8 @@ public sealed class SalesService(PosDatabase database)
             receiptLines.Add((v,item.QuantityMilli,lineTotal));
         }
         long grandTotal = checked((long)total);
+        if (expectedTotalIdr is long expected && grandTotal != expected)
+            throw new InvalidOperationException("Harga produk berubah. Muat ulang keranjang sebelum pembayaran.");
         if (paidIdr < grandTotal)
             throw new InvalidOperationException("Paid amount is below sale total.");
         long change = checked(paidIdr - grandTotal);

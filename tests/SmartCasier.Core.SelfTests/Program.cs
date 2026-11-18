@@ -122,5 +122,15 @@ Run("SQLite stock trigger blocks negative balance",()=>Demo(db=>
         "INSERT INTO stock_movements(id,variant_id,movement_type,delta_qty_milli) "+
         "VALUES('bad','BAUT-M8X30','SALE',-999999);"));
 }));
+Run("expected cart total detects stale product price",()=>Demo(db=>
+{
+    var id=Guid.NewGuid();
+    var s=new SalesService(db);
+    Throws<InvalidOperationException>(()=>s.Checkout(
+        id,[new("BAUT-M8X30",1000)],5000,expectedTotalIdr:999));
+    Assert(Query(db,"SELECT COUNT(*) FROM sales;")==0,"Stale cart was charged");
+    Assert(new CatalogService(db).Search("BAUT-M8X30")[0].OnHandMilli==3000,
+        "Stock changed on stale cart");
+}));
 Console.WriteLine("TEST SUMMARY: "+passed+" passed, "+failed+" failed");
 if(failed>0)Environment.ExitCode=1;
