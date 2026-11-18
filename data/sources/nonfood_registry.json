@@ -53,6 +53,15 @@
       "review_status": "PENDING",
       "scope": "NONFOOD_GLOBAL_FILTER_ID",
       "note": "Global dataset with country/category tags. Adapter selects explicitly Indonesia-tagged nonfood items. Preserve ODbL attribution and review derivative-database obligations before approval. Never import prices or stock. Local download required; no records downloaded yet."
+    },
+    {
+      "id": "ID_PRDECT_HF_NONFOOD",
+      "title": "PRDECT-ID Indonesian ecommerce dataset (metadata-only)",
+      "url": "https://huggingface.co/datasets/reyhanksatria05/PRDECT-ID_Dataset",
+      "license_name": "CC0-1.0 claimed in HF dataset card; LICENSE file is empty; upstream ecommerce reuse rights unverified",
+      "review_status": "PENDING",
+      "scope": "NONFOOD_MIXED",
+      "note": "Local CSV 5,400 rows including reviews/locations/prices; adapter extracts only approved category product titles; no barcode, brand, SKU, price, stock, location or review. Do not publish raw data. Product title often includes variant; manual SKU validation required."
     }
   ]
 }

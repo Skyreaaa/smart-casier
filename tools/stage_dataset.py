@@ -18,7 +18,8 @@ FIELDS = ("external_id", "product_name", "brand", "category_code", "variant",
 ALLOWED_CATEGORIES = {
     "SPARE_PARTS", "FASTENERS", "PLUMBING", "ELECTRICAL", "TOOLS",
     "SHEET_MATERIALS", "BUILDING_MATERIALS", "HOUSEHOLD_NONFOOD",
-    "DIGITAL_SERVICES",
+    "DIGITAL_SERVICES", "AUTOMOTIVE_GENERAL", "HARDWARE_GENERAL",
+    "STATIONERY", "ELECTRONICS_GENERAL",
 }
 UNITS = {"PCS", "M", "TXN"}
 # Conservative flag for likely food falsely mapped to an allowed non-food category.
