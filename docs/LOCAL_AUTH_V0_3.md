@@ -29,7 +29,7 @@
 
 - Migrasi operasional [004_local_auth.sql](../database/migrations/004_local_auth.sql) menambah `app_users` dan `security_audit`, `user_version=4`, menjaga sales/stock existing. Database staging eksternal tetap file SQLite terpisah.
 - Password disimpan sebagai hash `PBKDF2-HMAC-SHA256`, salt acak 32 byte, 310.000 iterasi. Tidak ada password hardcoded atau plaintext di database.
-- Lima login gagal mengunci akun sementara 15 menit. Sesi berlaku 8 jam di memori proses dan gugur saat aplikasi ditutup atau operator diganti di UI.
+- Lima login gagal mengunci akun sementara 15 menit. Sesi Admin diperiksa terhadap batas 8 jam **saat mengakses operasi sensitif**. UI menghapus referensi sesi ketika operator diganti atau aplikasi ditutup, tetapi **kedaluwarsa sesi belum ditegakkan pada seluruh jalur checkout/histori** dan harus dilengkapi sebelum operasional.
 - Audit keamanan saat ini mencakup bootstrap Admin, login sukses/gagal dan pembuatan Kasir. **Identitas admin yang mengubah harga/stok belum diikat ke ledger perubahan; ini masih backlog.**
 - **Batas keamanan penting:** file SQLite belum terenkripsi atau dilindungi ACL khusus; orang dengan hak tulis file pada Windows tetap dapat memodifikasi database langsung. Sebagian API baca dan checkout pada Core/CLI masih memiliki jalur tanpa token yang diperiksa Core. Pembatasan `checkout` CLI hanya untuk database bernama `demo` adalah guard penggunaan, **bukan batas keamanan yang kuat**.
 - Backup mencakup data akun dan hash password; **tidak terenkripsi**. Simpan di folder terbatas dan jangan bagikan ke pihak lain.
