@@ -7,12 +7,14 @@ namespace SmartCasier.Core;
 public sealed class PosDatabase
 {
     private readonly string _connectionString;
+    internal string FilePath { get; }
 
     public PosDatabase(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("Database path is required.", nameof(filePath));
         var fullPath = Path.GetFullPath(filePath);
+        FilePath = fullPath;
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         _connectionString = new SqliteConnectionStringBuilder
         {
@@ -41,14 +43,16 @@ public sealed class PosDatabase
             pragma.ExecuteNonQuery();
         }
         var version = GetVersion(connection);
-        if (version is not (0 or 1 or 3))
+        if (version is not (0 or 1 or 3 or 4))
             throw new InvalidOperationException(
                 "Unsupported operational database version: " + version +
                 ". Staging schema version 2 belongs in a separate file.");
         if (version == 0) RunEmbeddedMigration(connection, "001_core.sql");
         if (GetVersion(connection) == 1)
             RunEmbeddedMigration(connection, "003_pos_sales.sql");
-        if (GetVersion(connection) != 3)
+        if (GetVersion(connection) == 3)
+            RunEmbeddedMigration(connection, "004_local_auth.sql");
+        if (GetVersion(connection) != 4)
             throw new InvalidOperationException("Operational database migration failed.");
     }
 

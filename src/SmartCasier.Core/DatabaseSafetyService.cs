@@ -59,7 +59,7 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         }
         if (Scalar(conn, "PRAGMA quick_check;") != "ok")
             throw new InvalidDataException("Backup gagal pemeriksaan integritas SQLite.");
-        if (Scalar(conn, "PRAGMA user_version;") != "3")
+        if (Scalar(conn, "PRAGMA user_version;") is not ("3" or "4"))
             throw new InvalidDataException(
                 "Skema tidak sesuai Smart Casier POS v3. Staging DB tidak dapat dipulihkan.");
         using (var cmd = conn.CreateCommand())
@@ -81,8 +81,9 @@ public sealed class DatabaseSafetyService(PosDatabase database)
     }
 
     /// <summary>Backup online ke file tujuan BARU; WAL aktif tetap konsisten.</summary>
-    public BackupFileInfo BackupToNewFile(string destinationPath)
+    public BackupFileInfo BackupToNewFile(string destinationPath, AuthSession admin)
     {
+        new AuthService(database).RequireAdmin(admin);
         var destination = Full(destinationPath);
         using var source = database.Open();
         RequireDifferent(DatabasePath(source), destination);
@@ -113,8 +114,9 @@ public sealed class DatabaseSafetyService(PosDatabase database)
     /// Pulihkan snapshot ke file BARU dan uji integritasnya. DB kasir saat ini tidak diubah.
     /// File hasil dapat digunakan pada sesi berikut setelah prosedur pengalihan database.
     /// </summary>
-    public BackupFileInfo RestoreToNewFile(string backupPath, string destinationPath)
+    public BackupFileInfo RestoreToNewFile(string backupPath, string destinationPath, AuthSession admin)
     {
+        new AuthService(database).RequireAdmin(admin);
         var backup = Full(backupPath);
         var destination = Full(destinationPath);
         RequireDifferent(backup, destination);

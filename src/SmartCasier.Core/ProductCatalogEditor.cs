@@ -45,8 +45,9 @@ public sealed class ProductCatalogEditor(PosDatabase database)
     }
 
     /// <summary>Menciptakan kategori/keluarga bila belum tersedia dan SKU jual baru, atomik.</summary>
-    public string Create(NewSku request)
+    public string Create(NewSku request, AuthSession admin)
     {
+        new AuthService(database).RequireAdmin(admin);
         ArgumentNullException.ThrowIfNull(request);
         var categoryCode = CleanKey(request.CategoryCode, "Kode kategori");
         var categoryName = CleanName(request.CategoryName, "Nama kategori");
@@ -146,8 +147,9 @@ public sealed class ProductCatalogEditor(PosDatabase database)
     }
 
     /// <summary>Perubahan harga tidak mengubah snapshot harga di histori penjualan.</summary>
-    public void UpdatePrice(string sku, long newPriceIdr)
+    public void UpdatePrice(string sku, long newPriceIdr, AuthSession admin)
     {
+        new AuthService(database).RequireAdmin(admin);
         if (newPriceIdr < 0) throw new ArgumentOutOfRangeException(nameof(newPriceIdr));
         var normalized = CleanKey(sku, "SKU");
         using var conn = database.Open();
@@ -160,8 +162,9 @@ public sealed class ProductCatalogEditor(PosDatabase database)
     }
 
     /// <summary>Mutasi stok bukan edit saldo langsung; alasan wajib tercatat di ledger.</summary>
-    public void AdjustStock(string sku, long deltaMilli, string reason)
+    public void AdjustStock(string sku, long deltaMilli, string reason, AuthSession admin)
     {
+        new AuthService(database).RequireAdmin(admin);
         var normalized = CleanKey(sku, "SKU");
         var note = CleanName(reason, "Alasan koreksi");
         if (deltaMilli == 0) throw new ArgumentException("Perubahan stok tidak boleh nol.");
