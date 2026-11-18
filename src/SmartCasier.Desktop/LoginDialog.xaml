@@ -1,0 +1,48 @@
+<Window x:Class="SmartCasier.Desktop.LoginDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Masuk — Smart Casier" Width="480" Height="490"
+        MinWidth="430" MinHeight="450" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="28,22,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="18"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock x:Name="Heading" FontSize="23" FontWeight="Bold"
+                       Text="Masuk ke Smart Casier"/>
+            <TextBlock x:Name="Explanation" Margin="0,6,0,0" TextWrapping="Wrap"
+                       Foreground="{StaticResource MutedBrush}"
+                       Text="Gunakan akun lokal yang dibuat oleh Admin."/>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Text="Username" FontWeight="SemiBold"/>
+        <TextBox Grid.Row="4" x:Name="UsernameBox" MaxLength="32"
+                 AutomationProperties.Name="Username akun kasir"/>
+        <TextBlock Grid.Row="6" Text="Password" FontWeight="SemiBold"/>
+        <PasswordBox Grid.Row="8" x:Name="PasswordInput" MinHeight="38"
+                     Padding="10,7" PasswordChar="●"
+                     AutomationProperties.Name="Password akun"/>
+        <StackPanel Grid.Row="10" x:Name="ConfirmationPanel" Visibility="Collapsed">
+            <TextBlock Text="Ulangi password (minimal 12 karakter)"
+                       FontWeight="SemiBold" Margin="0,0,0,6"/>
+            <PasswordBox x:Name="ConfirmationInput" MinHeight="38" Padding="10,7"
+                         PasswordChar="●" AutomationProperties.Name="Konfirmasi password Admin"/>
+        </StackPanel>
+        <TextBlock Grid.Row="12" x:Name="ErrorText" Foreground="#992727"
+                   TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+        <StackPanel Grid.Row="14" Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Content="Keluar" IsCancel="True" Width="110"/>
+            <Button x:Name="SubmitButton" Content="Masuk" IsDefault="True"
+                    Width="155" Style="{StaticResource PrimaryButton}"
+                    Click="Submit_Click" Margin="0"/>
+        </StackPanel>
+    </Grid>
+</Window>

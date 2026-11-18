@@ -1,0 +1,43 @@
+<Window x:Class="SmartCasier.Desktop.CreateCashierDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Buat Akun Kasir" Width="465" Height="455"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid Margin="26">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Akun Kasir Baru" FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock Text="Kasir dapat menjual dan membaca riwayat, tidak mengubah SKU/harga/stok atau backup."
+                       Margin="0,5,0,0" TextWrapping="Wrap"
+                       Foreground="{StaticResource MutedBrush}"/>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Text="Username" FontWeight="SemiBold"/>
+        <TextBox Grid.Row="4" x:Name="UsernameInput" MaxLength="32"
+                 AutomationProperties.Name="Username akun kasir baru"/>
+        <TextBlock Grid.Row="6" Text="Password (minimal 12 karakter)" FontWeight="SemiBold"/>
+        <PasswordBox Grid.Row="8" x:Name="PasswordInput" Padding="10,7" MinHeight="38"
+                     AutomationProperties.Name="Password kasir baru"/>
+        <StackPanel Grid.Row="10">
+            <TextBlock Text="Ulangi password" FontWeight="SemiBold" Margin="0,0,0,6"/>
+            <PasswordBox x:Name="ConfirmInput" Padding="10,7" MinHeight="38"
+                         AutomationProperties.Name="Konfirmasi password kasir baru"/>
+        </StackPanel>
+        <TextBlock Grid.Row="12" x:Name="ErrorText" Foreground="#992727"
+                   TextWrapping="Wrap"/>
+        <StackPanel Grid.Row="14" Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Content="Batal" IsCancel="True" Width="105"/>
+            <Button Content="Buat Kasir" Width="140" Style="{StaticResource PrimaryButton}"
+                    Click="Create_Click" Margin="0"/>
+        </StackPanel>
+    </Grid>
+</Window>
