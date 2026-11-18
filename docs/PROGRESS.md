@@ -8,9 +8,9 @@
 ## Ringkasan terverifikasi
 
 - **13/32 checklist selesai (41%):** termasuk dasar database dan 2 acceptance criteria POS. Angka bukan kesiapan produksi.
-- **Aplikasi WPF GUI, POS Core, editor SKU, histori struk dan backup/restore SQLite aman tersedia.** [Build/test Windows dan Linux lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781). Restore menghasilkan DB baru, belum menggantikan DB aktif; klik UI dan aksesibilitas belum diuji; tidak ada data toko nyata.
+- **WPF login lokal Admin/Kasir dan pemeriksaan akses Admin di Core tersedia.** [Build dan 53 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615). Restore tetap non-destruktif; GUI klik/aksesibilitas dan database/OS hardening belum diuji.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** autentikasi/role admin, aktivasi restore terkontrol, backup terjadwal, dan simulator barcode/encoder. Validasi SKU nyata tetap DEFERRED_ON_SITE.
+- **Tugas aktif berikutnya:** hardening autentikasi seluruh operasi Core dan histori audit mutasi per operator, lalu simulator barcode/encoder; aktivasi restore terkontrol dan backup terjadwal tetap backlog. Validasi fisik tetap DEFERRED_ON_SITE.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -75,6 +75,16 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - Fase implementasi POS **diizinkan dimulai sekarang** memakai database dan data sintetis; bukan menunggu validasi fisik.
 - Dasbor 13/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
 
+## Bukti login Admin/Kasir v0.3 (software)
+
+- [x] Migrasi [akun lokal v4](../database/migrations/004_local_auth.sql): Admin, Kasir, PBKDF2-SHA256 + salt, lockout login, audit autentikasi.
+- [x] [Dialog WPF](../src/SmartCasier.Desktop/LoginDialog.xaml) login dan first-run Admin **tanpa default password**; [pembuatan Kasir](../src/SmartCasier.Desktop/CreateCashierDialog.xaml); [service otorisasi](../src/SmartCasier.Core/AuthService.cs).
+- [x] Hak Admin wajib pada operasi edit SKU/harga/stok dan backup/restore, termasuk pemeriksaan dari service Core; tidak hanya tombol dinonaktifkan.
+- [x] [14 tes keamanan](../tests/SmartCasier.Auth.SelfTests/Program.cs), total [53 tes per OS (Windows/Linux CI lulus)](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615).
+- [x] Dependensi SQLite diperbarui ke `Microsoft.Data.Sqlite 10.0.13`; log CI tidak lagi memunculkan peringatan keamanan `NU1903`.
+- [ ] Hak akses **seluruh API** transaksi/read-only, audit user per perubahan data, password reset/rotasi, penguncian OS/file database, uji klik GUI dan threat-model.
+- [ ] Tidak ada klaim production-ready; lihat [batas keamanan login](LOCAL_AUTH_V0_3.md).
+
 ## Bukti software POS Core + Windows WPF GUI
 
 - [x] [Core .NET](../src/SmartCasier.Core) dan [CLI demo](../src/SmartCasier.Cli); migrasi [sales/receipt](../database/migrations/003_pos_sales.sql).
@@ -86,7 +96,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [ ] CRUD metadata lengkap, aktivasi restore, backup terjadwal/enkripsi, laporan lengkap, refund, payment selain tunai, role/permissions, dan tes klik GUI.
 - [ ] Hardware adapter dan verifikasi fisik tetap DEFERRED_ON_SITE sesuai policy.
 
-**Checklist utama 13/32** tetap: histori dan backup dibuat secara parsial, tetapi SC-POS-05 membutuhkan cetak/ekspor receipt serta SC-POS-06 membutuhkan recovery operasional lebih lengkap. Tidak ada tugas lapangan yang dianggap selesai.
+**Checklist utama 13/32** tetap: peningkatan role tidak otomatis menyelesaikan seluruh CRUD, checkout cetak struk atau disaster recovery. Tes WPF interaktif/keamanan file dan seluruh bukti on-site masih terbuka.
 
 ## Gate dan definisi selesai
 

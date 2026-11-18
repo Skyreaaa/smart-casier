@@ -2,12 +2,12 @@
 
 **Mode:** SOFTWARE_ONLY — **bukan aplikasi siap dipakai sebagai kasir komersial**.  
 **Teknologi:** WPF, C#/.NET 10, SQLite WAL, offline, satu PC Windows.  
-**Status bukti:** [Build Windows + Linux dan pengujian POS/katalog/history/backup lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
+**Status bukti:** [Build Windows + Linux dan 53 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
 
 ## Dapat dijalankan dari GitHub Actions
 
 1. Masuk ke repository private [Smart Casier](https://github.com/Skyreaaa/smart-casier).
-2. Buka [workflow software Windows terakhir yang lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781).
+2. Buka [workflow software Windows terakhir yang lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615).
 3. Di bagian *Artifacts*, pilih `smart-casier-windows-demo` (artifact retensi 7 hari dari tanggal run), ekstrak semua berkas dalam satu folder.
 4. Instal **.NET 10 Desktop Runtime x64** di Windows bila belum ada (ini versi **framework-dependent**, bukan installer mandiri).
 5. Dari PowerShell pada folder hasil ekstrak jalankan:
@@ -77,5 +77,7 @@ Saat membuat varian baru untuk keluarga yang sama, gunakan **kode keluarga dan n
 5. Simulator device events — scanner dan meter encoder — tanpa menuntut hardware tersedia.
 
 **Pembaruan v0.2:** Riwayat receipt dan backup/restore aman ke file BARU tersedia dalam WPF. [Panduan dan keterbatasan pemulihan](SALES_HISTORY_AND_BACKUP.md).
+
+**Pembaruan v0.3:** Saat pertama dijalankan, buat Admin lokal sendiri (password minimal 12 karakter); login wajib sebelum membuka kasir. Admin dapat membuat akun Kasir melalui tombol di header, lalu ganti pengguna. Harga/stok/backup/restore hanya Admin. [Panduan otorisasi, risiko dan status lengkap](LOCAL_AUTH_V0_3.md).
 
 **Definisi selesai versi ini:** source ter-commit, aplikasi WPF terkompilasi, tes bisnis lulus, artifact tersedia, dan gap pengujian UI dicatat. Tidak ada klaim *production ready*.
