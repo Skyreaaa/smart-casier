@@ -19,6 +19,15 @@
                 <TextBlock Text="SMART CASIER" FontSize="25" FontWeight="Bold" Foreground="#176B5B"/>
                 <TextBlock Text="Kasir offline · katalog non-makanan · pembayaran tunai"
                            FontSize="13" Foreground="{StaticResource MutedBrush}" Margin="0,4,0,0"/>
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <Button Content="Riwayat Transaksi" Click="HistoryButton_Click"
+                            AutomationProperties.Name="Buka riwayat penjualan yang tersimpan"/>
+                    <Button Content="Buat Backup" Click="BackupButton_Click"
+                            AutomationProperties.Name="Buat backup aman database SQLite"/>
+                    <Button Content="Restore ke File Baru" Click="RestoreButton_Click"
+                            AutomationProperties.Name="Pulihkan backup ke database baru tanpa mengganti database aktif"
+                            Margin="0"/>
+                </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <TextBlock x:Name="ModeText" Text="MODE PRODUKSI — DATA LOKAL"

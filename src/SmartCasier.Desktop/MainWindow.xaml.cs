@@ -1,4 +1,5 @@
 using System.IO;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -157,6 +158,110 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             ShowError("Perubahan gagal: " + ex.Message);
+        }
+    }
+
+    private void HistoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        try
+        {
+            new SalesHistoryDialog(_database) { Owner = this }.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            ShowError("Gagal membuka histori: " + ex.Message);
+        }
+    }
+
+    private void BackupButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        var dialog = new SaveFileDialog
+        {
+            Title = "Simpan Snapshot Backup Smart Casier",
+            Filter = "Database SQLite (*.db)|*.db",
+            DefaultExt = ".db",
+            AddExtension = true,
+            OverwritePrompt = true,
+            FileName = "smart-casier-backup-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".db"
+        };
+        if (dialog.ShowDialog(this) != true) return;
+        try
+        {
+            var info = new DatabaseSafetyService(_database).BackupToNewFile(dialog.FileName);
+            ShowInfo("Backup SQLite terverifikasi: " + info.FilePath);
+            MessageBox.Show(this,
+                "Backup selesai dan telah diperiksa integritasnya.\n\n" +
+                "File: " + info.FilePath + "\n" +
+                "Ukuran: " + info.SizeBytes.ToString("N0", Indonesian) + " byte\n" +
+                "SHA-256: " + info.Sha256 + "\n\n" +
+                "Simpan salinan pada media lain. Backup belum otomatis dijadwalkan.",
+                "Backup Berhasil", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            ShowError("Backup tidak berhasil: " + ex.Message);
+        }
+    }
+
+    private void RestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        var select = new OpenFileDialog
+        {
+            Title = "Pilih Backup SQLite Smart Casier",
+            Filter = "Database SQLite (*.db)|*.db",
+            CheckFileExists = true
+        };
+        if (select.ShowDialog(this) != true) return;
+        try
+        {
+            DatabaseSafetyService.ValidateBackup(select.FileName);
+        }
+        catch (Exception ex)
+        {
+            ShowError("File backup tidak valid: " + ex.Message);
+            return;
+        }
+
+        var target = new SaveFileDialog
+        {
+            Title = "Simpan Hasil Restore sebagai DATABASE BARU",
+            Filter = "Database SQLite (*.db)|*.db",
+            DefaultExt = ".db",
+            AddExtension = true,
+            OverwritePrompt = true,
+            FileName = "smart-casier-restore-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".db"
+        };
+        if (target.ShowDialog(this) != true) return;
+
+        var confirm = MessageBox.Show(this,
+            "Restore akan membuat database BARU yang tervalidasi.\n" +
+            "Database aktif TIDAK diganti atau ditimpa.\n\n" +
+            "Backup: " + select.FileName + "\n" +
+            "Tujuan: " + target.FileName + "\n\n" +
+            "Lanjutkan?",
+            "Konfirmasi Restore Aman", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+            MessageBoxResult.No);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            var restored = new DatabaseSafetyService(_database)
+                .RestoreToNewFile(select.FileName, target.FileName);
+            ShowInfo("Restore berhasil ke file baru; database aktif tidak berubah.");
+            MessageBox.Show(this,
+                "Database berhasil dipulihkan dan lulus pemeriksaan integritas.\n\n" +
+                "File hasil: " + restored.FilePath + "\n" +
+                "SHA-256: " + restored.Sha256 + "\n\n" +
+                "Database aktif tetap berjalan. Peralihan ke hasil restore " +
+                "memerlukan prosedur terpisah saat aplikasi ditutup.",
+                "Restore Berhasil", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            ShowError("Restore tidak berhasil: " + ex.Message);
         }
     }
 
