@@ -190,5 +190,21 @@ class StagingTests(unittest.TestCase):
             self.assertEqual(len(list(csv.DictReader(f))), 0)
 
 
+    def test_milk_color_is_not_food_and_milk_drink_is(self):
+        example = self.rows()[0].copy()
+        example["external_id"] = "OVENCOLOR"
+        example["category_code"] = "ELECTRONICS_GENERAL"
+        example["product_name"] = "Oven listrik 12 liter - Putih Susu"
+        drink = self.rows()[0].copy()
+        drink["external_id"] = "MILK"
+        drink["category_code"] = "ELECTRONICS_GENERAL"
+        drink["product_name"] = "Susu UHT rasa vanila"
+        stage_file(self.conn, "DEMO_SYNTHETIC_NONFOOD",
+                   self.make_csv([example, drink]))
+        self.assertEqual(self.rows_for_status("PENDING_REVIEW"), 1)
+        self.assertEqual(self.rows_for_status("FOOD_REVIEW"), 1)
+
+
+
 if __name__ == "__main__":
     unittest.main()

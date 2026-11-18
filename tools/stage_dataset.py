@@ -23,7 +23,23 @@ ALLOWED_CATEGORIES = {
 }
 UNITS = {"PCS", "M", "TXN"}
 # Conservative flag for likely food falsely mapped to an allowed non-food category.
-FOOD_WORDS = re.compile(r"\b(?:keripik|mi(?:e)? instan|snack|biskuit|susu|makanan|minuman|kopi bubuk|teh botol|beras|gula pasir)\b", re.IGNORECASE)
+FOOD_WORDS = re.compile(
+    r"\b(?:keripik|mi(?:e)? instan|snack|biskuit|makanan|minuman|"
+    r"kopi bubuk|teh botol|beras|gula pasir)\b",
+    re.IGNORECASE,
+)
+MILK_WORD = re.compile(r"\bsusu\b", re.IGNORECASE)
+
+
+def likely_food_title(name):
+    """Flag likely food without treating the common color 'putih susu' as food."""
+    if FOOD_WORDS.search(name):
+        return True
+    for match in MILK_WORD.finditer(name):
+        preceding = name[max(0, match.start() - 18):match.start()]
+        if not re.search(r"\bputih\s*$", preceding, re.IGNORECASE):
+            return True
+    return False
 
 
 def utcnow():
@@ -147,7 +163,7 @@ def stage_file(conn, source_id, path):
             status, reason = "PENDING_REVIEW", ""
             if row["category_code"] not in ALLOWED_CATEGORIES:
                 status, reason = "OUT_OF_SCOPE", "Category not in non-food allowlist"
-            elif FOOD_WORDS.search(row["product_name"]):
+            elif likely_food_title(row["product_name"]):
                 status, reason = "FOOD_REVIEW", "Food-related keywords in product name; manual review required"
             elif row["unit_code"] not in UNITS:
                 status, reason = "INVALID_UNIT", "Unknown unit"
