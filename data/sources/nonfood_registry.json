@@ -44,6 +44,15 @@
       "review_status": "PENDING",
       "scope": "MIXED",
       "note": "Documented example is food, prices are randomized, no guaranteed nonfood coverage; do not import prices."
+    },
+    {
+      "id": "OPF_NONFOOD_INDONESIA",
+      "title": "Open Products Facts non-food (Indonesia-tagged subset)",
+      "url": "https://world.openproductsfacts.org",
+      "license_name": "ODbL 1.0 (database; attribution/share-alike obligations)",
+      "review_status": "PENDING",
+      "scope": "NONFOOD_GLOBAL_FILTER_ID",
+      "note": "Global dataset with country/category tags. Adapter selects explicitly Indonesia-tagged nonfood items. Preserve ODbL attribution and review derivative-database obligations before approval. Never import prices or stock. Local download required; no records downloaded yet."
     }
   ]
 }
