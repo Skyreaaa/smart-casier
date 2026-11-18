@@ -52,7 +52,7 @@ static long Number(PosDatabase db,string query)
 Run("first run has no credentials until setup",()=>WithDatabase((db,auth)=>
 {
     Assert(!auth.HasUsers(),"New database already has accounts");
-    Assert(Number(db,"PRAGMA user_version;")==5,"Schema not migrated to v5");
+    Assert(Number(db,"PRAGMA user_version;")==6,"Schema not migrated to v6");
 }));
 
 Run("first admin bootstrap and login",()=>WithDatabase((db,auth)=>

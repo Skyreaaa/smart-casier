@@ -11,6 +11,8 @@ on:
       - 'database/migrations/003_pos_sales.sql'
       - 'database/migrations/004_local_auth.sql'
       - 'database/migrations/005_sales_operator.sql'
+      - 'database/migrations/006_device_inbox.sql'
+      - 'tests/SmartCasier.Device.SelfTests/**'
       - '.github/workflows/pos-core.yml'
   pull_request:
 jobs:

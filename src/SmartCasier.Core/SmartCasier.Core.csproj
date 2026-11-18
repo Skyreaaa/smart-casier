@@ -10,5 +10,6 @@
     <EmbeddedResource Include="../../database/migrations/003_pos_sales.sql" LogicalName="SmartCasier.Core.Migrations.003_pos_sales.sql" />
     <EmbeddedResource Include="../../database/migrations/004_local_auth.sql" LogicalName="SmartCasier.Core.Migrations.004_local_auth.sql" />
     <EmbeddedResource Include="../../database/migrations/005_sales_operator.sql" LogicalName="SmartCasier.Core.Migrations.005_sales_operator.sql" />
+    <EmbeddedResource Include="../../database/migrations/006_device_inbox.sql" LogicalName="SmartCasier.Core.Migrations.006_device_inbox.sql" />
   </ItemGroup>
 </Project>
