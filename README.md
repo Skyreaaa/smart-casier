@@ -1,12 +1,14 @@
 # Smart Casier
 
-> **Status: tahap perencanaan & pengumpulan data** — aplikasi POS, hardware, dan machine learning belum diimplementasikan.
+> **Status: Database Foundation v0.1** — skema SQLite, importer CSV, dan pengujian otomatis tersedia. Data toko nyata, aplikasi POS, hardware, dan AI belum diimplementasikan.
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
-![Status](https://img.shields.io/badge/status-data%20discovery-2563eb) ![Checklist](https://img.shields.io/badge/checklist-6%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
+![Status](https://img.shields.io/badge/status-database%20foundation-2563eb) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
+
+**Database:** [Panduan pendataan](docs/DATABASE_FOUNDATION.md) · [Template CSV kosong](data/templates/catalog_products.csv) · [Migrasi SQLite](database/migrations/001_core.sql) · [Hasil CI](https://github.com/Skyreaaa/smart-casier/actions/runs/44265209926)
 
 **Baca:** [Laporan progres lengkap](docs/PROGRESS.md) · [Roadmap dan milestone](docs/ROADMAP.md) · [Riwayat perubahan](docs/CHANGELOG.md)
 
@@ -16,12 +18,12 @@
 | --- | ---: | --- | --- |
 | Discovery & scope | 4/5 | ▰▰▰▰▰▰▰▰▱▱ 80% | Dalam finalisasi |
 | Repository & dokumentasi | 2/4 | ▰▰▰▰▰▱▱▱▱▱ 50% | Aktif |
-| Fondasi database | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Prioritas berikutnya |
+| Fondasi database | 5/6 | ▰▰▰▰▰▰▰▰▱▱ 83% | Skema + importer + CI siap; butuh 30 SKU nyata |
 | POS & inventaris | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
 | Simulator perangkat | 0/5 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
 | Visi komputer & pilot | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Fase lanjutan |
 
-**Interpretasi:** 6 dari 32 checklist selesai, mayoritas berupa kesepakatan scope dan dokumentasi. **Belum ada fitur transaksi, database SQLite, kamera AI, maupun alat ukur yang sudah bekerja.**
+**Interpretasi:** 11 dari 32 checklist selesai (34% checklist, bukan kesiapan produksi). **Skema dan importer SQLite sudah tersedia dan lulus 11 pengujian CI.** Belum ada inventaris nyata, antarmuka POS, kamera AI, atau alat ukur yang bekerja.
 
 ## Alur pekerjaan
 
@@ -51,9 +53,9 @@ flowchart LR
 
 ## Tugas langsung berikutnya
 
-1. Definisikan kolom master produk, kategori, varian dan unit dasar stok.
-2. Buat skema relasi data SKU, kode barcode opsional, pemasok, persediaan dan pergerakan stok.
-3. Siapkan format pengumpulan produk serta data contoh yang **secara jelas berlabel simulasi**.
-4. Uji desain skema sebelum antarmuka POS dibangun.
+1. Inventarisasi **minimal 30 SKU toko nyata** dari kategori berbeda menggunakan [template CSV](data/templates/catalog_products.csv).
+2. Periksa SKU/varian, satuan PCS atau M, stok, harga, dan barcode opsional bersama pengelola toko.
+3. Validasi hasil dengan importer dry-run, lalu audit kecocokannya dengan skema.
+4. Setelah data nyata tervalidasi, mulai CRUD produk dan fitur POS core. **Demo enam SKU bukan inventaris toko**.
 
 > Dashboard dibuat sebagai laporan *manual snapshot*. Perbarui centang di `docs/PROGRESS.md` dan sinkronkan angka/diagram di README serta SVG saat pekerjaan benar-benar selesai; tidak ada klaim otomatisasi progres dari GitHub Actions.

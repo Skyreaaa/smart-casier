@@ -2,6 +2,8 @@
 
 > Durasi estimasi untuk tim kecil; **bukan tanggal rilis yang sudah dijanjikan**. Hardware/ML mengikuti validasi tahap sebelumnya.
 
+**Update 18 November 2026:** Database Foundation v0.1 sudah tersedia: [skema SQL](../database/migrations/001_core.sql), [template CSV](../data/templates/catalog_products.csv), [panduan](DATABASE_FOUNDATION.md) dan 11 tes CI lulus. **Pending:** 30 SKU toko nyata. Fase POS belum dimulai.
+
 | Fase | Target urutan | Hasil minimum | Ketergantungan |
 | --- | --- | --- | --- |
 | 0. Kebutuhan dan baseline | Minggu 1–2 | Spesifikasi + contoh SKU toko | Observasi lapangan |

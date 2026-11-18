@@ -4,10 +4,10 @@
 
 ## Ringkasan terverifikasi
 
-- **6/32 checklist selesai (19%):** hasil keputusan/pendokumentasian, bukan pekerjaan software yang sudah lolos tes.
-- **Aplikasi POS berfungsi: tidak ada/belum dibangun.** Tidak ada database terisi, firmware, integrasi kamera, atau pengujian hardware.
+- **11/32 checklist selesai (34%):** termasuk 5 pekerjaan fondasi database. Angka bukan persentase kesiapan aplikasi.
+- **Aplikasi POS belum dibangun.** Migrasi dan importer SQLite telah di-commit dan 11 tes database lulus di GitHub Actions; belum ada inventaris toko asli, firmware, maupun integrasi hardware.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** model data produk dan struktur inventaris.
+- **Tugas aktif berikutnya:** mengumpulkan dan memverifikasi 30 SKU toko nyata memakai template katalog.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -31,14 +31,14 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [ ] **SC-OPS-03** — Issue backlog terstruktur
 - [ ] **SC-OPS-04** — Review dan persetujuan acceptance criteria
 
-### 3. Fondasi database — 0/6
+### 3. Fondasi database — 5/6
 
-- [ ] **SC-DAT-01** — Kamus data produk, kategori, varian, satuan
-- [ ] **SC-DAT-02** — ERD dan aturan relasi SKU/variant
-- [ ] **SC-DAT-03** — Template CSV dan validasi impor
+- [x] **SC-DAT-01** — Kamus data produk, kategori, varian, satuan
+- [x] **SC-DAT-02** — ERD dan aturan relasi SKU/variant
+- [x] **SC-DAT-03** — Template CSV dan validasi impor
 - [ ] **SC-DAT-04** — 30 SKU sampel yang diverifikasi
-- [ ] **SC-DAT-05** — Migrasi schema SQLite
-- [ ] **SC-DAT-06** — Tes integritas database dan stok
+- [x] **SC-DAT-05** — Migrasi schema SQLite
+- [x] **SC-DAT-06** — Tes integritas database dan stok
 
 ### 4. POS & inventaris — 0/6
 
@@ -71,11 +71,17 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 | Gate | Harus terbukti sebelum naik fase | Status |
 | --- | --- | --- |
 | G0 — Scope | Kebutuhan disetujui, data sampel toko mewakili jenis SKU & satuan | Belum lulus (observasi toko belum ada) |
-| G1 — Database | Migrasi SQLite + test integritas + import/rollback valid | Belum dimulai |
+| G1 — Database | Migrasi SQLite + test integritas + import/rollback valid | Baseline teknis lulus CI; belum lulus validasi 30 SKU nyata |
 | G2 — POS | Transaksi offline, stok konsisten, backup/restore teruji | Belum dimulai |
 | G3 — Alat ukur | Panjang aktual dibanding referensi pada variasi material; error handling | Belum dimulai |
 | G4 — Commercial | Kewajiban metrologi legal dikonfirmasi; perangkat dinyatakan layak sesuai ketentuan | Belum diperiksa |
 | G5 — AI | Evaluasi identifikasi SKU, rejection ambiguous, latency pada PC target | Belum dimulai |
+
+## Bukti pekerjaan database
+
+- [Migrasi SQLite](../database/migrations/001_core.sql), [importer CSV](../tools/import_catalog.py), [template kosong](../data/templates/catalog_products.csv), [contoh sintetis](../data/examples/catalog_demo.csv).
+- [Tes regresi](../tests/test_database.py) dan [GitHub Actions berhasil](https://github.com/Skyreaaa/smart-casier/actions/runs/44265209926) pada commit 5c7edd6.
+- Database produksi dan data toko nyata **belum dibuat**. Tes yang lulus tidak membuktikan kesiapan kasir komersial.
 
 ## Prioritas pengumpulan data
 
@@ -88,7 +94,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 
 ## Asumsi dan yang belum diketahui
 
-- Belum ada data Excel/katalog produk yang diunggah; struktur data belum diuji pada SKU nyata.
+- Belum ada data Excel/katalog produk yang diunggah; skema lulus uji sintetis tetapi belum diuji pada SKU toko nyata.
 - RAB awal perangkat **Rp8.404.000 + Rp1.596.000 cadangan** adalah angka *perencanaan* dari pembahasan, bukan quote vendor terkonfirmasi; desain casing premium mungkin mengubah biaya.
 - Batas Rp10 juta berlaku untuk hardware tambahan, tidak termasuk PC yang sudah ada.
 - Lebar, kekakuan, dan jenis material gulungan belum diketahui; alat universal perlu prototipe sebelum menyatakan toleransi.
