@@ -95,11 +95,11 @@ Test("update price preserves sale snapshot",()=>Database(db=>
     var ed=new TestEditor(db);
     ed.Create(Product());
     var id=Guid.NewGuid();
-    new SalesService(db).Checkout(id,[new("BOLT-M8X30",1000)],5000);
+    new SalesService(db).Checkout(id,[new("BOLT-M8X30",1000)],5000,ed.Admin);
     ed.UpdatePrice("BOLT-M8X30",1900);
     Assert(new CatalogService(db).Search("BOLT-M8X30")[0].UnitPriceIdr==1900,
         "Catalog not updated");
-    Assert(new SalesService(db).FindReceipt(id)!.Lines[0].PriceIdr==1200,
+    Assert(new SalesService(db).FindReceipt(id,ed.Admin)!.Lines[0].PriceIdr==1200,
         "Historical sale price changed");
 }));
 Test("bad product key does not create records",()=>Database(db=>
@@ -127,6 +127,7 @@ sealed class TestEditor
 {
     private readonly ProductCatalogEditor editor;
     private readonly AuthSession admin;
+    public AuthSession Admin => admin;
     public TestEditor(PosDatabase db)
     {
         var auth = new AuthService(db);
