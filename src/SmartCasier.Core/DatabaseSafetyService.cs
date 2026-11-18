@@ -89,8 +89,12 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         if (File.Exists(destination))
             throw new IOException("File tujuan sudah ada; backup tidak boleh menimpa file lama.");
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        bool createdByUs = false;
         try
         {
+            // Atomic CreateNew removes the check-then-create overwrite race.
+            using (new FileStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None)) { }
+            createdByUs = true;
             using (var target = OpenFile(destination, SqliteOpenMode.ReadWriteCreate))
             {
                 source.BackupDatabase(target);
@@ -100,7 +104,7 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         }
         catch
         {
-            DeleteIncomplete(destination);
+            if (createdByUs) DeleteIncomplete(destination);
             throw;
         }
     }
@@ -120,9 +124,12 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         if (File.Exists(destination))
             throw new IOException("Tujuan restore sudah ada; database lama tidak boleh ditimpa.");
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        bool createdByUs = false;
         try
         {
-            // Source is a closed, validated backup; creating separate DB is intentional.
+            // Claim the NEW destination atomically. Never open an existing file for write.
+            using (new FileStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None)) { }
+            createdByUs = true;
             using (var source = OpenFile(backup, SqliteOpenMode.ReadOnly))
             using (var target = OpenFile(destination, SqliteOpenMode.ReadWriteCreate))
             {
@@ -133,7 +140,7 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         }
         catch
         {
-            DeleteIncomplete(destination);
+            if (createdByUs) DeleteIncomplete(destination);
             throw;
         }
     }
