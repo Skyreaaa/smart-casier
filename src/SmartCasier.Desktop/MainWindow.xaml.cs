@@ -21,6 +21,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private PosDatabase? _database;
     private CatalogService? _catalog;
     private SalesService? _sales;
+    private AuthSession? _session;
     private Guid _requestId = Guid.NewGuid();
     private bool _initialized;
     private string _itemCount = "0 produk";
@@ -57,11 +58,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             _database.Initialize();
             if (isDemo) DemoSeeder.Seed(_database);
 
+            var login = new LoginDialog(_database) { Owner = this };
+            if (login.ShowDialog() != true || login.Session is null)
+            {
+                Close();
+                return;
+            }
+            _session = login.Session;
             _catalog = new CatalogService(_database);
             _sales = new SalesService(_database);
             ModeText.Text = isDemo ? "DEMO · DATA SINTETIS" : "DATA LOKAL · BELUM VALIDASI TOKO";
             DatabaseText.Text = path;
             _initialized = true;
+            ConfigurePermissions();
             ReloadProducts();
             ShowInfo(isDemo
                 ? "Mode demo aktif. Harga dan stok adalah contoh sintetis, bukan data toko."
@@ -113,7 +122,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (dialog.ShowDialog() != true || dialog.Result is null) return;
         try
         {
-            var sku = new ProductCatalogEditor(_database).Create(dialog.Result);
+            var sku = new ProductCatalogEditor(_database).Create(dialog.Result,
+                _session ?? throw new InvalidOperationException("Login Admin dibutuhkan."));
             SearchBox.Text = sku;
             ReloadProducts();
             ShowInfo("SKU " + sku + " telah dibuat pada database lokal.");
@@ -139,7 +149,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var editor = new ProductCatalogEditor(_database);
             if (dialog.Operation == SkuEditDialog.EditKind.Price)
             {
-                editor.UpdatePrice(item.Sku, dialog.Value);
+                editor.UpdatePrice(item.Sku, dialog.Value,
+                    _session ?? throw new InvalidOperationException("Login Admin dibutuhkan."));
                 var line = Cart.FirstOrDefault(x => string.Equals(x.Sku, item.Sku,
                     StringComparison.OrdinalIgnoreCase));
                 if (line is not null)
@@ -149,7 +160,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 }
             }
             else if (dialog.Operation == SkuEditDialog.EditKind.Adjustment)
-                editor.AdjustStock(item.Sku, dialog.Value, dialog.Reason);
+                editor.AdjustStock(item.Sku, dialog.Value, dialog.Reason,
+                    _session ?? throw new InvalidOperationException("Login Admin dibutuhkan."));
             ResetPendingRequest();
             UpdateTotals();
             ReloadProducts();
@@ -159,6 +171,58 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             ShowError("Perubahan gagal: " + ex.Message);
         }
+    }
+
+    private void ConfigurePermissions()
+    {
+        bool admin = _session?.IsAdmin == true;
+        NewSkuButton.IsEnabled = admin;
+        ManageSkuButton.IsEnabled = admin;
+        BackupButton.IsEnabled = admin;
+        RestoreButton.IsEnabled = admin;
+        CashierButton.IsEnabled = admin;
+        OperatorText.Text = _session is null
+            ? "Belum login"
+            : "Operator: " + _session.Username + " (" +
+              (_session.IsAdmin ? "Admin" : "Kasir") + ")";
+    }
+
+    private void CreateCashierButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null || _session is null) return;
+        try
+        {
+            new AuthService(_database).RequireAdmin(_session);
+            var dialog = new CreateCashierDialog(_database, _session) { Owner = this };
+            if (dialog.ShowDialog() == true)
+                ShowInfo("Akun Kasir baru telah dibuat. Gunakan Ganti Pengguna untuk masuk.");
+        }
+        catch (Exception ex) { ShowError("Tidak bisa membuat akun Kasir: " + ex.Message); }
+    }
+
+    private void SwitchUserButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        _initialized = false;
+        _session = null;
+        ConfigurePermissions();
+        Cart.Clear();
+        PaidBox.Text = "0";
+        UpdateTotals();
+        CheckoutButton.IsEnabled = false;
+        var login = new LoginDialog(_database) { Owner = this };
+        if (login.ShowDialog() != true || login.Session is null)
+        {
+            Close();
+            return;
+        }
+        _session = login.Session;
+        _initialized = true;
+        ResetPendingRequest();
+        ConfigurePermissions();
+        CheckoutButton.IsEnabled = true;
+        ReloadProducts();
+        ShowInfo("Masuk sebagai " + _session.Username + ".");
     }
 
     private void HistoryButton_Click(object sender, RoutedEventArgs e)
@@ -189,7 +253,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (dialog.ShowDialog(this) != true) return;
         try
         {
-            var info = new DatabaseSafetyService(_database).BackupToNewFile(dialog.FileName);
+            var info = new DatabaseSafetyService(_database).BackupToNewFile(dialog.FileName,
+                _session ?? throw new InvalidOperationException("Login Admin dibutuhkan."));
             ShowInfo("Backup SQLite terverifikasi: " + info.FilePath);
             MessageBox.Show(this,
                 "Backup selesai dan telah diperiksa integritasnya.\n\n" +
@@ -249,7 +314,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         try
         {
             var restored = new DatabaseSafetyService(_database)
-                .RestoreToNewFile(select.FileName, target.FileName);
+                .RestoreToNewFile(select.FileName, target.FileName,
+                    _session ?? throw new InvalidOperationException("Login Admin dibutuhkan."));
             ShowInfo("Restore berhasil ke file baru; database aktif tidak berubah.");
             MessageBox.Show(this,
                 "Database berhasil dipulihkan dan lulus pemeriksaan integritas.\n\n" +
