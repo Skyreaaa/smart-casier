@@ -1,5 +1,15 @@
 # Catatan Progres
 
+## 2026-11-18 — Windows WPF GUI + katalog editor (CI PASS)
+
+- Antarmuka WPF untuk pencarian SKU/alias/barcode, keranjang, pembayaran tunai, dan notifikasi; F2 fokus cari, F4 checkout.
+- Dialog menambah SKU/varian dan koreksi stok; pengelolaan harga melindungi histori penjualan, dan checkout menolak total keranjang yang sudah berubah.
+- Database per pengguna dipisahkan dari database demo sintetis; aplikasi tidak membutuhkan kamera/encoder fisik.
+- [Build Windows WPF + tes core/katalog lulus; artifact demo diterbitkan](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437).
+- [Panduan Windows](WINDOWS_DESKTOP_V0_1.md). **Checklist utama naik ke 13/32 (41%)** tanpa menghitung bukti on-site.
+- GUI belum diuji langsung dengan mouse, keyboard, zoom, screen reader atau alur pengguna di PC toko.
+
+
 ## 2026-11-18 — Software POS Core v0.1 (CI Windows/Linux PASS)
 
 - .NET 10/C# + SQLite operasional, migrasi baru 003 untuk sales/receipt snapshots (002 tetap file DB staging terpisah).

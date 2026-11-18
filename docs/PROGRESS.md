@@ -3,14 +3,14 @@
 **EXECUTION MODE: SOFTWARE_ONLY** — [detail keputusan dan daftar tugas fisik ditunda](EXECUTION_POLICY_SOFTWARE_ONLY.md). Tugas lapangan tidak dihapus atau di-centang. Ketiadaan 30 SKU nyata tidak memblokir development aplikasi dengan fixture sintetis.
 
 
-**Per 18 November 2026** · Tahap **Discovery → Persiapan Master Data**
+**Per 18 November 2026** · Tahap **Software-Only → Windows WPF / POS Core**
 
 ## Ringkasan terverifikasi
 
-- **11/32 checklist selesai (34%):** termasuk 5 pekerjaan fondasi database. Angka bukan persentase kesiapan aplikasi.
-- **POS Core .NET + CLI demo tersedia dan diuji pada Windows/Linux; GUI kasir belum dibangun.** Migrasi dan importer SQLite telah di-commit dan 11 tes database lulus di GitHub Actions; belum ada inventaris toko asli, firmware, maupun integrasi hardware.
+- **13/32 checklist selesai (41%):** termasuk dasar database dan 2 acceptance criteria POS. Angka bukan kesiapan produksi.
+- **Aplikasi WPF GUI, POS Core, dan editor SKU lokal tersedia.** Build desktop dan suite regresi di Windows/Linux [lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437); klik end-to-end/aksesibilitas belum diuji langsung; belum ada stok toko asli maupun hardware.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** audit 4 sumber kandidat non-makanan dan mengumpulkan 30 SKU toko nyata memakai template katalog; tidak ada sumber eksternal yang disetujui untuk impor otomatis.
+- **Tugas aktif berikutnya:** histori transaksi, backup/restore, role admin, dan simulator perangkat. Validasi SKU nyata tetap DEFERRED_ON_SITE.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -43,11 +43,11 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] **SC-DAT-05** — Migrasi schema SQLite
 - [x] **SC-DAT-06** — Tes integritas database dan stok
 
-### 4. POS & inventaris — 0/6 (implementasi core parsial, belum semua acceptance)
+### 4. POS & inventaris — 2/6 (implementasi software; deploy toko belum diizinkan)
 
 - [ ] **SC-POS-01** — CRUD master produk dan pencarian
-- [ ] **SC-POS-02** — Varian dan satuan pcs/meter
-- [ ] **SC-POS-03** — Keranjang dan transaksi dasar
+- [x] **SC-POS-02** — Varian dan satuan pcs/meter (UI + Core + tes)
+- [x] **SC-POS-03** — Keranjang dan transaksi dasar (UI + Core + tes)
 - [ ] **SC-POS-04** — Pergerakan stok + peringatan ambang per SKU
 - [ ] **SC-POS-05** — Checkout, pembayaran, struk dan riwayat
 - [ ] **SC-POS-06** — Backup/restore dan penanganan gangguan
@@ -73,17 +73,18 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 
 - Semua bukti cek alat, SKU asli, observasi toko, akurasi dan legal metrologi dicatat `DEFERRED_ON_SITE` dalam [execution policy](EXECUTION_POLICY_SOFTWARE_ONLY.md).
 - Fase implementasi POS **diizinkan dimulai sekarang** memakai database dan data sintetis; bukan menunggu validasi fisik.
-- Dasbor 11/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
+- Dasbor 13/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
 
-## Bukti software POS Core (belum GUI)
+## Bukti software POS Core + Windows WPF GUI
 
 - [x] [Core .NET](../src/SmartCasier.Core) dan [CLI demo](../src/SmartCasier.Cli); migrasi [sales/receipt](../database/migrations/003_pos_sales.sql).
 - [x] Checkout lokal atomik, idempotency request, harga snapshot IDR, stok PCS/M, batas stok tidak negatif.
-- [x] [13 tes integrasi](../tests/SmartCasier.Core.SelfTests/Program.cs) pada [CI Windows + Linux (PASS)](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
-- [ ] GUI kasir, product CRUD, backup/restore, laporan lengkap, refund, payment selain tunai, role/permissions.
+- [x] [14 tes integrasi](../tests/SmartCasier.Core.SelfTests/Program.cs) pada [CI Windows + Linux (PASS)](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
+- [x] [GUI WPF](../src/SmartCasier.Desktop), [editor SKU](../src/SmartCasier.Core/ProductCatalogEditor.cs), [tes katalog](../tests/SmartCasier.Catalog.SelfTests/Program.cs), [CI Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437).
+- [ ] CRUD metadata lengkap, backup/restore, laporan lengkap, refund, payment selain tunai, role/permissions, testing klik GUI dan aksesibilitas.
 - [ ] Hardware adapter dan verifikasi fisik tetap DEFERRED_ON_SITE sesuai policy.
 
-**Checklist utama 11/32 tidak dinaikkan**: kriteria POS yang mencakup UI, pengelolaan dan alur end-to-end belum selesai. Implementasi Core adalah bukti kerja parsial, bukan kelulusan fase operasional.
+**Checklist utama 13/32**: dua kriteria dasar POS ditandai selesai secara software. Uji interaksi GUI, hak akses, backup, laporan, dan seluruh bukti fisik tetap terbuka; ini **bukan** kelulusan fase operasional.
 
 ## Gate dan definisi selesai
 
@@ -116,7 +117,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [ ] Minimal 30 SKU toko nyata dan lisensi sumber eksternal dikonfirmasi untuk promosi data ke master.
 - [ ] Setidaknya 30 SKU toko nyata diverifikasi.
 
-Enam sumber eksternal (termasuk Open Products Facts dan PRDECT-ID e-commerce Indonesia) tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
+Enam sumber eksternal (termasuk Open Products Facts dan PRDECT-ID e-commerce Indonesia) tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 13/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
 
 ## Audit data nyata (bukan data master toko)
 
