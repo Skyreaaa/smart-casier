@@ -21,6 +21,8 @@ ALLOWED_CATEGORIES = {
     "DIGITAL_SERVICES",
 }
 UNITS = {"PCS", "M", "TXN"}
+# Conservative flag for likely food falsely mapped to an allowed non-food category.
+FOOD_WORDS = re.compile(r"\\b(?:keripik|mi(?:e)? instan|snack|biskuit|susu|makanan|minuman|kopi bubuk|teh botol|beras|gula pasir)\\b", re.IGNORECASE)
 
 
 def utcnow():
@@ -144,6 +146,8 @@ def stage_file(conn, source_id, path):
             status, reason = "PENDING_REVIEW", ""
             if row["category_code"] not in ALLOWED_CATEGORIES:
                 status, reason = "OUT_OF_SCOPE", "Category not in non-food allowlist"
+            elif FOOD_WORDS.search(row["product_name"]):
+                status, reason = "FOOD_REVIEW", "Food-related keywords in product name; manual review required"
             elif row["unit_code"] not in UNITS:
                 status, reason = "INVALID_UNIT", "Unknown unit"
             elif row["category_code"] == "DIGITAL_SERVICES" and row["unit_code"] != "TXN":
