@@ -1,0 +1,48 @@
+<Window x:Class="SmartCasier.Desktop.NewSkuDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tambah SKU Baru" Width="620" Height="790" MinWidth="550" MinHeight="600"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize">
+    <DockPanel Margin="24">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Batal" Width="98" IsCancel="True"/>
+            <Button Content="Simpan SKU" Width="125" IsDefault="True"
+                    Style="{StaticResource PrimaryButton}" Click="Save_Click" Margin="0"/>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <TextBlock Text="Produk &amp; Varian Baru" FontSize="22" FontWeight="SemiBold"/>
+                <TextBlock Text="Data ini disimpan lokal. Jangan gunakan harga/stok contoh sebagai data toko nyata."
+                           TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,18"/>
+                <TextBlock Text="Kode kategori (contoh: BAUT)"/>
+                <TextBox x:Name="CategoryCodeBox" Margin="0,4,0,10" Text="BAUT"/>
+                <TextBlock Text="Nama kategori"/>
+                <TextBox x:Name="CategoryNameBox" Margin="0,4,0,10" Text="Baut dan Mur"/>
+                <TextBlock Text="Kode keluarga produk (contoh: BAUT-M8)"/>
+                <TextBox x:Name="ProductKeyBox" Margin="0,4,0,10"/>
+                <TextBlock Text="Nama produk"/>
+                <TextBox x:Name="ProductNameBox" Margin="0,4,0,10"/>
+                <TextBlock Text="SKU unik (contoh: BAUT-M8X30)"/>
+                <TextBox x:Name="SkuBox" Margin="0,4,0,10"/>
+                <TextBlock Text="Label varian (warna/ukuran)"/>
+                <TextBox x:Name="VariantBox" Margin="0,4,0,10"/>
+                <TextBlock Text="Satuan stok dan jual"/>
+                <ComboBox x:Name="UnitBox" Margin="0,4,0,10" SelectedIndex="0"
+                          MinHeight="36" AutomationProperties.Name="Satuan stok dan jual">
+                    <ComboBoxItem Content="PCS"/>
+                    <ComboBoxItem Content="M"/>
+                </ComboBox>
+                <TextBlock Text="Harga jual rupiah (integer)"/>
+                <TextBox x:Name="PriceBox" Text="0" Margin="0,4,0,10"/>
+                <TextBlock Text="Stok awal (PCS bulat; meter hingga 3 desimal)"/>
+                <TextBox x:Name="OpeningBox" Text="0" Margin="0,4,0,10"/>
+                <TextBlock Text="Ambang stok menipis"/>
+                <TextBox x:Name="ThresholdBox" Text="3" Margin="0,4,0,10"/>
+                <TextBlock Text="Barcode (opsional)"/>
+                <TextBox x:Name="BarcodeBox" Margin="0,4,0,10"/>
+                <TextBlock x:Name="ErrorText" Foreground="#992727" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

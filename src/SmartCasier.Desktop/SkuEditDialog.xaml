@@ -1,0 +1,42 @@
+<Window x:Class="SmartCasier.Desktop.SkuEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Pengaturan Harga dan Stok" Width="510" Height="545"
+        MinWidth="470" MinHeight="500" WindowStartupLocation="CenterOwner">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="14"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock x:Name="SkuLabel" FontSize="21" FontWeight="SemiBold"/>
+            <TextBlock Text="Setiap tombol menjalankan satu perubahan terpisah."
+                       Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2">
+            <TextBlock Text="Harga jual baru (IDR)"/>
+            <TextBox x:Name="PriceBox" Margin="0,5,0,8"/>
+            <Button Content="Simpan Harga" Width="160" HorizontalAlignment="Left"
+                    Click="Price_Click"/>
+        </StackPanel>
+        <Separator Grid.Row="4"/>
+        <StackPanel Grid.Row="6">
+            <TextBlock Text="Koreksi stok (+/-). Contoh: -2 atau 1.250 meter"/>
+            <TextBox x:Name="DeltaBox" Text="0" Margin="0,6,0,8"/>
+            <TextBlock Text="Alasan koreksi (wajib)"/>
+            <TextBox x:Name="ReasonBox" Margin="0,5,0,8"/>
+            <Button Content="Catat Koreksi Stok" Width="190" HorizontalAlignment="Left"
+                    Click="Adjust_Click"/>
+        </StackPanel>
+        <TextBlock Grid.Row="8" x:Name="ErrorText" TextWrapping="Wrap" Foreground="#992727"/>
+        <TextBlock Grid.Row="10" Text="Perubahan harga tidak mengubah histori penjualan."
+                   TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="12"/>
+        <Button Grid.Row="12" Content="Tutup" IsCancel="True" Width="100"
+                HorizontalAlignment="Right" Margin="0"/>
+    </Grid>
+</Window>
