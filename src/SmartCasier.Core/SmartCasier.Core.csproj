@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.13" />
     <EmbeddedResource Include="../../database/migrations/001_core.sql" LogicalName="SmartCasier.Core.Migrations.001_core.sql" />
     <EmbeddedResource Include="../../database/migrations/003_pos_sales.sql" LogicalName="SmartCasier.Core.Migrations.003_pos_sales.sql" />
     <EmbeddedResource Include="../../database/migrations/004_local_auth.sql" LogicalName="SmartCasier.Core.Migrations.004_local_auth.sql" />
