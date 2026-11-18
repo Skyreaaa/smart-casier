@@ -59,7 +59,7 @@ public sealed class DatabaseSafetyService(PosDatabase database)
         }
         if (Scalar(conn, "PRAGMA quick_check;") != "ok")
             throw new InvalidDataException("Backup gagal pemeriksaan integritas SQLite.");
-        if (Scalar(conn, "PRAGMA user_version;") is not ("3" or "4"))
+        if (Scalar(conn, "PRAGMA user_version;") is not ("3" or "4" or "5"))
             throw new InvalidDataException(
                 "Skema tidak sesuai Smart Casier POS v3. Staging DB tidak dapat dipulihkan.");
         using (var cmd = conn.CreateCommand())

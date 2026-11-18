@@ -43,7 +43,7 @@ public sealed class PosDatabase
             pragma.ExecuteNonQuery();
         }
         var version = GetVersion(connection);
-        if (version is not (0 or 1 or 3 or 4))
+        if (version is not (0 or 1 or 3 or 4 or 5))
             throw new InvalidOperationException(
                 "Unsupported operational database version: " + version +
                 ". Staging schema version 2 belongs in a separate file.");
@@ -52,7 +52,9 @@ public sealed class PosDatabase
             RunEmbeddedMigration(connection, "003_pos_sales.sql");
         if (GetVersion(connection) == 3)
             RunEmbeddedMigration(connection, "004_local_auth.sql");
-        if (GetVersion(connection) != 4)
+        if (GetVersion(connection) == 4)
+            RunEmbeddedMigration(connection, "005_sales_operator.sql");
+        if (GetVersion(connection) != 5)
             throw new InvalidOperationException("Operational database migration failed.");
     }
 

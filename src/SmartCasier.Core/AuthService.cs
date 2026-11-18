@@ -213,25 +213,43 @@ public sealed class AuthService(PosDatabase database)
         return new AuthSession(id, name, role, database.FilePath);
     }
 
-    /// <summary>Verify live account status and role on every privileged operation.</summary>
-    public void RequireAdmin(AuthSession? session)
+    /// <summary>Operator must be active, same role/database and within session lifetime.</summary>
+    public void RequireOperator(AuthSession? session)
     {
-        if (session is null || !session.IsAdmin)
-            throw new SecurityException("Aksi ini membutuhkan login Admin.");
-        if (DateTimeOffset.UtcNow - session.IssuedUtc > SessionDuration)
-            throw new SecurityException("Sesi berakhir. Silakan login ulang.");
+        using var connection = database.Open();
+        RequireOperator(session, connection, null);
+    }
+
+    internal void RequireOperator(
+        AuthSession? session, SqliteConnection connection, SqliteTransaction? transaction)
+    {
+        if (session is null || (session.Role != "ADMIN" && session.Role != "CASHIER"))
+            throw new SecurityException("Aksi ini membutuhkan login operator.");
+        if (session.IssuedUtc > DateTimeOffset.UtcNow.AddMinutes(1) ||
+            DateTimeOffset.UtcNow - session.IssuedUtc >= SessionDuration)
+            throw new SecurityException("Sesi operator berakhir. Silakan login ulang.");
         if (!string.Equals(session.DatabasePath, database.FilePath,
                 OperatingSystem.IsWindows()
                     ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
-            throw new SecurityException("Sesi tidak berlaku untuk database ini.");
-        using var conn = database.Open();
-        using var cmd = conn.CreateCommand();
+            throw new SecurityException("Sesi operator tidak berlaku untuk database ini.");
+        using var cmd = connection.CreateCommand();
+        cmd.Transaction = transaction;
         cmd.CommandText = """
-            SELECT role FROM app_users WHERE id=@id AND active=1;
+            SELECT role FROM app_users WHERE id=@user AND active=1;
             """;
-        cmd.Parameters.AddWithValue("@id", session.UserId);
-        if (!string.Equals(cmd.ExecuteScalar() as string,"ADMIN",StringComparison.Ordinal))
-            throw new SecurityException("Hak akses Admin telah dicabut.");
+        cmd.Parameters.AddWithValue("@user", session.UserId);
+        var currentRole = cmd.ExecuteScalar() as string;
+        if (currentRole is null ||
+            !string.Equals(currentRole, session.Role, StringComparison.Ordinal))
+            throw new SecurityException("Hak akses operator sudah tidak berlaku.");
+    }
+
+    /// <summary>Only active Admin on this database can perform privileged mutation.</summary>
+    public void RequireAdmin(AuthSession? session)
+    {
+        RequireOperator(session);
+        if (session?.IsAdmin != true)
+            throw new SecurityException("Aksi ini membutuhkan login Admin.");
     }
 
     public string CreateCashier(AuthSession admin, string username, string password)

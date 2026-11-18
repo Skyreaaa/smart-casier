@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -21,7 +22,7 @@ public sealed class SalesService(PosDatabase database)
         bool FractionAllowed, long StockMilli);
 
     public SaleReceipt Checkout(Guid requestId, IEnumerable<SaleLineRequest> requestLines, long paidIdr,
-        long? expectedTotalIdr = null)
+        AuthSession? operatorSession, long? expectedTotalIdr = null)
     {
         if (requestId == Guid.Empty)
             throw new ArgumentException("Sale request ID may not be empty.", nameof(requestId));
@@ -45,6 +46,8 @@ public sealed class SalesService(PosDatabase database)
 
         using var conn = database.Open();
         using var tx = conn.BeginTransaction();
+        // Validate inside the same transaction as stock and receipt writes.
+        new AuthService(database).RequireOperator(operatorSession, conn, tx);
         var saleKey = requestId.ToString("N");
         var prior = ReadReceipt(conn,tx,saleKey);
         if (prior is not null)
@@ -83,11 +86,12 @@ public sealed class SalesService(PosDatabase database)
         var receiptNo = "SC-" + saleKey.ToUpperInvariant();
 
         Execute(conn,tx,"""
-            INSERT INTO sales(sale_id,receipt_no,request_hash,total_idr,paid_idr,change_idr)
-            VALUES(@id,@receipt,@hash,@total,@paid,@change);
+            INSERT INTO sales(sale_id,receipt_no,request_hash,total_idr,paid_idr,change_idr,operator_id)
+            VALUES(@id,@receipt,@hash,@total,@paid,@change,@operator);
             """,
             ("@id",saleKey),("@receipt",receiptNo),("@hash",hash),
-            ("@total",grandTotal),("@paid",paidIdr),("@change",change));
+            ("@total",grandTotal),("@paid",paidIdr),("@change",change),
+            ("@operator", operatorSession!.UserId));
         foreach (var line in receiptLines)
         {
             Execute(conn,tx,"""
@@ -140,8 +144,9 @@ public sealed class SalesService(PosDatabase database)
             r.GetString(3),r.GetInt64(4),r.GetInt64(5)==1,r.GetInt64(6));
     }
 
-    public SaleReceipt? FindReceipt(Guid saleId)
+    public SaleReceipt? FindReceipt(Guid saleId, AuthSession? operatorSession)
     {
+        new AuthService(database).RequireOperator(operatorSession);
         using var conn = database.Open();
         return ReadReceiptWithoutTransaction(conn,saleId.ToString("N"));
     }

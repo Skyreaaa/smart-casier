@@ -14,8 +14,9 @@ public sealed record SaleHistoryRow(
 public sealed class SalesHistoryService(PosDatabase database)
 {
     public IReadOnlyList<SaleHistoryRow> Search(
-        string? searchTerm = null, int limit = 100, int offset = 0)
+        AuthSession? operatorSession, string? searchTerm = null, int limit = 100, int offset = 0)
     {
+        new AuthService(database).RequireOperator(operatorSession);
         if (limit is < 1 or > 200)
             throw new ArgumentOutOfRangeException(nameof(limit), "Limit harus 1-200.");
         if (offset is < 0 or > 100_000)
@@ -63,5 +64,6 @@ public sealed class SalesHistoryService(PosDatabase database)
     }
 
     /// <summary>Detail receipt memakai snapshot tersimpan; tidak mengambil harga saat ini.</summary>
-    public SaleReceipt? Receipt(Guid saleId) => new SalesService(database).FindReceipt(saleId);
+    public SaleReceipt? Receipt(Guid saleId, AuthSession? operatorSession)
+        => new SalesService(database).FindReceipt(saleId, operatorSession);
 }
