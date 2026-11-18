@@ -7,7 +7,7 @@
 - **11/32 checklist selesai (34%):** termasuk 5 pekerjaan fondasi database. Angka bukan persentase kesiapan aplikasi.
 - **Aplikasi POS belum dibangun.** Migrasi dan importer SQLite telah di-commit dan 11 tes database lulus di GitHub Actions; belum ada inventaris toko asli, firmware, maupun integrasi hardware.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** mengumpulkan dan memverifikasi 30 SKU toko nyata memakai template katalog.
+- **Tugas aktif berikutnya:** audit 4 sumber kandidat non-makanan dan mengumpulkan 30 SKU toko nyata memakai template katalog; tidak ada sumber eksternal yang disetujui untuk impor otomatis.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -82,6 +82,17 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [Migrasi SQLite](../database/migrations/001_core.sql), [importer CSV](../tools/import_catalog.py), [template kosong](../data/templates/catalog_products.csv), [contoh sintetis](../data/examples/catalog_demo.csv).
 - [Tes regresi](../tests/test_database.py) dan [GitHub Actions berhasil](https://github.com/Skyreaaa/smart-casier/actions/runs/44265209926) pada commit 5c7edd6.
 - Database produksi dan data toko nyata **belum dibuat**. Tes yang lulus tidak membuktikan kesiapan kasir komersial.
+
+## Dataset staging non-makanan — tambahan yang sudah diimplementasikan
+
+- [x] Filter kategori non-makanan dan guard tambahan untuk indikasi makanan yang salah kategori.
+- [x] Prototipe staging SQLite, registry sumber, validasi GTIN, deduplikasi, dan larangan memasukkan data langsung ke POS.
+- [x] Persetujuan record dan sumber dengan jejak audit, termasuk penahanan kembali ketika sumber ditolak.
+- [x] Tes CI otomatis: [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions) — cek run terakhir untuk jumlah tes dan kesimpulan aktual.
+- [ ] Lisensi/privasi sumber eksternal ditinjau dan disetujui untuk ekstraksi data nyata.
+- [ ] Setidaknya 30 SKU toko nyata diverifikasi.
+
+Empat referensi dataset Indonesia tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
 
 ## Prioritas pengumpulan data
 

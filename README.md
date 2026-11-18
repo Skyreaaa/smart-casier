@@ -1,12 +1,14 @@
 # Smart Casier
 
-> **Status: Database Foundation v0.1** — skema SQLite, importer CSV, dan pengujian otomatis tersedia. Data toko nyata, aplikasi POS, hardware, dan AI belum diimplementasikan.
+> **Status: Database Foundation + Non-food Staging v0.1** — skema SQLite, importer CSV, filter non-makanan, dan pengujian otomatis tersedia. **Belum ada katalog produk Indonesia yang disetujui**, data toko nyata, aplikasi POS, hardware, atau AI.
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
-![Status](https://img.shields.io/badge/status-database%20foundation-2563eb) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
+![Status](https://img.shields.io/badge/status-nonfood%20staging-2563eb) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
+
+**Dataset non-makanan:** [Pipeline staging](docs/DATASET_STAGING.md) · [Sumber kandidat](data/sources/nonfood_registry.json) · [Contoh sintetis](data/examples/nonfood_staging_demo.csv) · [Staging schema](database/migrations/002_dataset_staging.sql)
 
 **Database:** [Panduan pendataan](docs/DATABASE_FOUNDATION.md) · [Template CSV kosong](data/templates/catalog_products.csv) · [Migrasi SQLite](database/migrations/001_core.sql) · [Hasil CI](https://github.com/Skyreaaa/smart-casier/actions/runs/44265209926)
 
@@ -23,7 +25,7 @@
 | Simulator perangkat | 0/5 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
 | Visi komputer & pilot | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Fase lanjutan |
 
-**Interpretasi:** 11 dari 32 checklist selesai (34% checklist, bukan kesiapan produksi). **Skema dan importer SQLite sudah tersedia dan lulus 11 pengujian CI.** Belum ada inventaris nyata, antarmuka POS, kamera AI, atau alat ukur yang bekerja.
+**Interpretasi:** 11 dari 32 checklist selesai (34% checklist, bukan kesiapan produksi). **Database dan pipeline staging non-makanan tersedia.** Dataset real Indonesia dalam master POS: **0 SKU terverifikasi**. Belum ada inventaris nyata, antarmuka POS, kamera AI, atau alat ukur yang bekerja.
 
 ## Alur pekerjaan
 
@@ -50,6 +52,19 @@ flowchart LR
 - Alat ukur material lembaran: target via keypad, panjang dikirim melalui USB, **kasir memilih material/warna dan mengonfirmasi**.
 - Inventaris dengan stok per SKU dan satuan; laporan **stok habis** dan **stok menipis** (ambang per SKU, default 3 untuk satuan pcs).
 - **Batas perangkat tambahan Rp10 juta**; estimasi RAB awal belum merupakan penawaran harga dan dapat direvisi setelah prototipe.
+
+## Non-food dataset intake (fase paralel)
+
+| Indikator | Kondisi |
+| --- | --- |
+| Scope | Spare part, baut, perkakas, pipa, material lembaran, listrik, pulsa |
+| Makanan/minuman | **Tidak termasuk**; record out-of-scope dikarantina |
+| Sumber eksternal kandidat | 4; seluruhnya **PENDING** persetujuan penggunaan |
+| Data eksternal yang masuk master POS | **0 SKU** |
+| Pipeline SQLite | Siap diuji; tidak menyentuh transaksi dan stok |
+| Quality gates | Barcode, duplikat, sumber/lisensi, reviewer, audit |
+
+Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). Dataset sintetis untuk CI **bukan** katalog toko nyata.
 
 ## Tugas langsung berikutnya
 

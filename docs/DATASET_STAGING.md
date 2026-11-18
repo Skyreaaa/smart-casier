@@ -54,6 +54,9 @@ python -m tools.stage_dataset --db data/private/staging.db ingest --source DEMO_
 # Ringkasan status tiap record
 python -m tools.stage_dataset --db data/private/staging.db report
 
+# Lihat ID kandidat yang siap ditinjau
+python -m tools.stage_dataset --db data/private/staging.db list --status PENDING_REVIEW
+
 # Review manual; gunakan id dari tabel SQLite staging
 python -m tools.stage_dataset --db data/private/staging.db review --id 1 --decision APPROVE --reviewer admin --note "Identitas SKU sudah diperiksa"
 
@@ -63,6 +66,16 @@ python -m tools.stage_dataset --db data/private/staging.db export --out data/pri
 # Jalankan tes
 python -m unittest discover -s tests -v
 ```
+
+### Persetujuan sumber eksternal
+
+Sumber Indonesia dalam registry tetap **PENDING** sampai hak pakai dan risiko privasi diperiksa. Reviewer yang berwenang perlu menyimpan bukti yang benar-benar dapat diaudit melalui perintah berikut (URL di bawah hanya ilustrasi, **bukan bukti izin**):
+
+```bash
+python -m tools.stage_dataset --db data/private/staging.db source-review --source ID_MENDELEY_MOTORPARTS_2026 --decision APPROVED --reviewer admin --note "Izin reuse dan privasi diperiksa" --evidence-url https://example.org/tautan-bukti-valid
+```
+
+Perintah itu merekam audit dan mengevaluasi ulang record yang sebelumnya tertahan. Opsi `--decision REJECTED` mencabut persetujuan dan menahan kembali item terkait. **CSV yang sudah sempat diekspor sebelum pencabutan tidak otomatis terhapus**: reviewer harus membatalkan distribusi ekspor lama. Persetujuan dalam software tidak otomatis menyatakan kepatuhan hukum; audit dokumen sumber tetap diperlukan.
 
 Perintah `init` tidak menimpa database yang sudah ada. Perintah `ingest` bersifat idempoten per (`source_id`, `external_id`): baris yang sama tidak ditambahkan dua kali, sedangkan perubahan pada external_id yang sudah ada ditolak sampai ditangani manual.
 

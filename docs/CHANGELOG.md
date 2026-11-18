@@ -1,5 +1,14 @@
 # Catatan Progres
 
+## 2026-11-18 — Staging dataset non-makanan
+
+- Dataset makanan/minuman dikeluarkan dari scope Smart Casier.
+- Disediakan registry kandidat non-food Indonesia, template ingest dan SQLite staging terpisah.
+- Filter kategori, validasi GTIN, deteksi duplikasi, status persetujuan manual dan audit sumber ditambahkan.
+- Sumber eksternal tidak diambil otomatis; seluruh 4 kandidat masih perlu pemeriksaan hak pakai.
+- Data SKU toko yang telah diverifikasi tetap 0. Tidak ada data toko yang diubah.
+
+
 ## 2026-11-18 — Database Foundation v0.1 (CI PASS)
 
 - Migrasi SQLite pertama: produk, varian SKU, barcode, alias, unit dan ledger stok append-only.
