@@ -1,0 +1,28 @@
+name: Software POS Core (.NET)
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/SmartCasier.Core.SelfTests/**'
+      - 'database/migrations/003_pos_sales.sql'
+      - '.github/workflows/pos-core.yml'
+  pull_request:
+jobs:
+  linux-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build POS core
+        run: dotnet build src/SmartCasier.Core/SmartCasier.Core.csproj --configuration Release
+  windows-core:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build POS core on Windows
+        run: dotnet build src/SmartCasier.Core/SmartCasier.Core.csproj --configuration Release
