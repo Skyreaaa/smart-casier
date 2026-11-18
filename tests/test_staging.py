@@ -8,7 +8,7 @@ from pathlib import Path
 
 from tools.stage_dataset import (
     FIELDS, connect, export_candidates, init, review, stage_file,
-    valid_gtin,
+    valid_gtin, review_source,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -156,6 +156,38 @@ class StagingTests(unittest.TestCase):
     def test_source_without_registry_entry_refused(self):
         with self.assertRaises(ValueError):
             stage_file(self.conn, "UNKNOWN_SOURCE", DEMO)
+
+
+    def test_source_review_lifts_license_hold_and_records_evidence(self):
+        item = self.rows()[0].copy()
+        item["external_id"] = "M0001"
+        stage_file(self.conn, "ID_MENDELEY_MOTORPARTS_2026", self.make_csv([item]))
+        self.assertEqual(self.rows_for_status("HOLD_LICENSE"), 1)
+        with self.assertRaises(ValueError):
+            review_source(self.conn, "ID_MENDELEY_MOTORPARTS_2026", "APPROVED",
+                          "reviewer", "checked", "")
+        review_source(self.conn, "ID_MENDELEY_MOTORPARTS_2026", "APPROVED",
+                      "reviewer", "evidence reviewed", "https://example.org/evidence")
+        self.assertEqual(self.rows_for_status("PENDING_REVIEW"), 1)
+        self.assertEqual(self.conn.execute(
+            "SELECT COUNT(*) FROM source_review_log"
+        ).fetchone()[0], 1)
+
+    def test_source_revocation_blocks_prior_item_approval(self):
+        item = self.rows()[0].copy()
+        item["external_id"] = "M0002"
+        stage_file(self.conn, "ID_MENDELEY_MOTORPARTS_2026", self.make_csv([item]))
+        review_source(self.conn, "ID_MENDELEY_MOTORPARTS_2026", "APPROVED",
+                      "reviewer", "checked", "https://example.org/license")
+        item_id = self.conn.execute("SELECT id FROM staged_items").fetchone()[0]
+        review(self.conn, item_id, "APPROVE", "reviewer", "checked identity")
+        review_source(self.conn, "ID_MENDELEY_MOTORPARTS_2026", "REJECTED",
+                      "reviewer", "permission revoked", "")
+        self.assertEqual(self.rows_for_status("HOLD_LICENSE"), 1)
+        out = self.root / "safe.csv"
+        export_candidates(self.conn, out)
+        with out.open(encoding="utf-8", newline="") as f:
+            self.assertEqual(len(list(csv.DictReader(f))), 0)
 
 
 if __name__ == "__main__":

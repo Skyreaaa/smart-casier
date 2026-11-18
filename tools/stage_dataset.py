@@ -204,6 +204,67 @@ def review(conn, item_id, decision, reviewer, note):
     print(f"REVIEWED: {item_id} -> {state}")
 
 
+
+
+def review_source(conn, source_id, decision, reviewer, note, evidence_url):
+    """Record an audited reuse decision and recheck held records."""
+    if not reviewer.strip() or not note.strip():
+        raise ValueError("Reviewer and review note are required")
+    if decision == "APPROVED" and not evidence_url.startswith("https://"):
+        raise ValueError("An external source needs a HTTPS evidence URL")
+    source = conn.execute(
+        "SELECT review_status FROM dataset_sources WHERE id=?", (source_id,)
+    ).fetchone()
+    if not source:
+        raise ValueError("Unknown source")
+    if source[0] == decision:
+        raise ValueError("Source already has that status")
+    with conn:
+        conn.execute(
+            "UPDATE dataset_sources SET review_status=? WHERE id=?", (decision,source_id)
+        )
+        conn.execute(
+            "INSERT INTO source_review_log(source_id,decision,reviewer,note,evidence_url,reviewed_at)"
+            " VALUES(?,?,?,?,?,?)",
+            (source_id,decision,reviewer.strip(),note.strip(),evidence_url,utcnow())
+        )
+        if decision == "REJECTED":
+            conn.execute(
+                "UPDATE staged_items SET status='HOLD_LICENSE',"
+                "reason='Source permission revoked',reviewer=NULL,review_note=NULL,"
+                "reviewed_at=NULL WHERE source_id=? AND status<>'REJECTED'",(source_id,)
+            )
+        else:
+            held = conn.execute(
+                "SELECT id,barcode,fingerprint FROM staged_items "
+                "WHERE source_id=? AND status='HOLD_LICENSE' ORDER BY id", (source_id,)
+            ).fetchall()
+            for item_id, barcode, fp in held:
+                prior = conn.execute(
+                    "SELECT id FROM staged_items WHERE id<? AND "
+                    "((barcode<>'' AND barcode=?) OR fingerprint=?) LIMIT 1",
+                    (item_id,barcode,fp)
+                ).fetchone()
+                status = "POSSIBLE_DUPLICATE" if prior else "PENDING_REVIEW"
+                reason = f"Potential duplicate of row {prior[0]}" if prior else ""
+                conn.execute("UPDATE staged_items SET status=?,reason=? WHERE id=?",
+                             (status,reason,item_id))
+    print(f"SOURCE_REVIEWED: {source_id} -> {decision}")
+
+
+def list_items(conn, status=None, limit=50):
+    if limit < 1 or limit > 500:
+        raise ValueError("limit must be 1-500")
+    query = "SELECT id,source_id,external_id,substr(product_name,1,70),status FROM staged_items"
+    params = []
+    if status:
+        query += " WHERE status=?"
+        params.append(status)
+    query += " ORDER BY id LIMIT ?"
+    params.append(limit)
+    for item_id, source_id, external_id, name, status in conn.execute(query,params):
+        print(f"{item_id:>5} | {source_id:<28} | {external_id:<16} | {status:<20} | {name}")
+
 EXPORT_FIELDS = ("source_id", "source_external_id", "product_name", "brand",
                  "category_code", "variant", "unit_code", "barcode",
                  "attributes_json", "product_url", "license_name",
@@ -258,6 +319,15 @@ def main():
     command.add_argument("--note", required=True)
     command = subs.add_parser("export")
     command.add_argument("--out", required=True)
+    command = subs.add_parser("source-review")
+    command.add_argument("--source", required=True)
+    command.add_argument("--decision", choices=("APPROVED", "REJECTED"), required=True)
+    command.add_argument("--reviewer", required=True)
+    command.add_argument("--note", required=True)
+    command.add_argument("--evidence-url", default="")
+    command = subs.add_parser("list")
+    command.add_argument("--status")
+    command.add_argument("--limit", type=int, default=50)
     subs.add_parser("report")
     args = parser.parse_args()
     try:
@@ -273,6 +343,10 @@ def main():
                 export_candidates(conn, args.out)
             elif args.command == "report":
                 report(conn)
+            elif args.command == "list":
+                list_items(conn, args.status, args.limit)
+            elif args.command == "source-review":
+                review_source(conn,args.source,args.decision,args.reviewer,args.note,args.evidence_url)
     except (ValueError, sqlite3.Error, OSError) as exc:
         parser.exit(1, f"ERROR: {exc}\n")
 

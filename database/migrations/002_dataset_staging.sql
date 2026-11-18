@@ -32,5 +32,12 @@ CREATE TABLE staged_items(
 CREATE INDEX idx_stage_barcode ON staged_items(barcode);
 CREATE INDEX idx_stage_fingerprint ON staged_items(fingerprint);
 CREATE INDEX idx_stage_status ON staged_items(status);
+CREATE TABLE source_review_log(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ source_id TEXT NOT NULL REFERENCES dataset_sources(id),
+ decision TEXT NOT NULL CHECK(decision IN ('APPROVED','REJECTED')),
+ reviewer TEXT NOT NULL,note TEXT NOT NULL,evidence_url TEXT NOT NULL,
+ reviewed_at TEXT NOT NULL
+);
 PRAGMA user_version=2;
 COMMIT;
