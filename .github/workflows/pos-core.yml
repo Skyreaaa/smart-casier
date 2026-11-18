@@ -1,15 +1,18 @@
-name: Software POS Core (.NET)
+name: Software POS Core and Windows Desktop
 on:
   push:
     paths:
       - 'src/**'
       - 'tests/SmartCasier.Core.SelfTests/**'
+      - 'database/migrations/001_core.sql'
       - 'database/migrations/003_pos_sales.sql'
       - '.github/workflows/pos-core.yml'
   pull_request:
 jobs:
   linux-core:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -17,22 +20,33 @@ jobs:
           dotnet-version: '10.0.x'
       - name: Build POS core and CLI
         run: dotnet build src/SmartCasier.Cli/SmartCasier.Cli.csproj --configuration Release
-      - name: Run software-only checkout tests
+      - name: Run POS core regression tests
         run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
-      - name: Check CLI demo on Linux
+      - name: Smoke-test demo CLI
         shell: bash
         run: |
           dotnet run --project src/SmartCasier.Cli -- init --db demo-pos.db
           dotnet run --project src/SmartCasier.Cli -- seed-demo --db demo-pos.db --confirm-synthetic
           dotnet run --project src/SmartCasier.Cli -- search --db demo-pos.db --query baut
-  windows-core:
+  windows-desktop:
     runs-on: windows-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Build POS core and CLI on Windows
-        run: dotnet build src/SmartCasier.Cli/SmartCasier.Cli.csproj --configuration Release
-      - name: Run offline checkout tests on Windows
+      - name: Build WPF cashier GUI
+        run: dotnet build src/SmartCasier.Desktop/SmartCasier.Desktop.csproj --configuration Release
+      - name: Run POS core tests on Windows
         run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
+      - name: Publish portable Windows folder (framework-dependent)
+        run: dotnet publish src/SmartCasier.Desktop/SmartCasier.Desktop.csproj --configuration Release --runtime win-x64 --self-contained false --output out/windows-desktop
+      - name: Upload Windows demo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-casier-windows-demo
+          path: out/windows-desktop/
+          if-no-files-found: error
+          retention-days: 7
