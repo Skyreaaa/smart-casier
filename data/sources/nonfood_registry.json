@@ -1,0 +1,49 @@
+{
+  "sources": [
+    {
+      "id": "DEMO_SYNTHETIC_NONFOOD",
+      "title": "Synthetic non-food records for CI only",
+      "url": "local://data/examples/nonfood_staging_demo.csv",
+      "license_name": "Synthetic test fixtures",
+      "review_status": "APPROVED",
+      "scope": "DEMO_ONLY",
+      "note": "Invented records; cannot be presented as real Indonesian product data."
+    },
+    {
+      "id": "ID_MENDELEY_MOTORPARTS_2026",
+      "title": "Motorcycle workshop spare parts research dataset (Indonesia)",
+      "url": "https://data.mendeley.com/datasets/bwyxwynbg5/1",
+      "license_name": "CC BY 4.0 (landing page)",
+      "review_status": "PENDING",
+      "scope": "SPARE_PARTS",
+      "note": "Contains customer and transaction data; perform data-minimization, privacy and suitability review before import. No automatic extraction."
+    },
+    {
+      "id": "ID_EKATALOG_ZENODO_2026",
+      "title": "Indonesia national e-Katalog v6 dataset",
+      "url": "https://zenodo.org/records/19604457",
+      "license_name": "Not verified for commercial reuse",
+      "review_status": "PENDING",
+      "scope": "NONFOOD_MIXED",
+      "note": "595k mixed products, substantial data volume; licensing and relevant categories need review. Not a barcode catalog."
+    },
+    {
+      "id": "ID_BARCODE_GITHUB_1000",
+      "title": "Indonesian barcode list (1000 mixed items)",
+      "url": "https://github.com/wpangestu/list-barcode-product-indonesia",
+      "license_name": "No clear reuse license verified",
+      "review_status": "PENDING",
+      "scope": "MIXED",
+      "note": "Excel includes food and non-food; filter and verify copyright before reuse."
+    },
+    {
+      "id": "ID_PRODUCT_API_GITHUB",
+      "title": "Indonesia product API (mixed catalog)",
+      "url": "https://github.com/ariph007/api-product-indonesia",
+      "license_name": "Not verified for dataset reuse",
+      "review_status": "PENDING",
+      "scope": "MIXED",
+      "note": "Documented example is food, prices are randomized, no guaranteed nonfood coverage; do not import prices."
+    }
+  ]
+}

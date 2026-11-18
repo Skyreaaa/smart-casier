@@ -1,0 +1,7 @@
+external_id,product_name,brand,category_code,variant,unit_code,barcode,attributes_json,product_url
+B001,Baut kepala segi enam,,FASTENERS,M8 x 30 mm,PCS,,"{""diameter_mm"":8,""length_mm"":30}",
+B002,Baut kepala segi enam,,FASTENERS,M8 x 35 mm,PCS,,"{""diameter_mm"":8,""length_mm"":35}",
+K001,Kertas minyak,,SHEET_MATERIALS,Merah,M,,"{""color"":""merah""}",
+P001,Pipa PVC,,PLUMBING,1 meter,PCS,,"{""material"":""PVC"",""length_mm"":1000}",
+D001,Pulsa prabayar,,DIGITAL_SERVICES,Nominal 10000,TXN,,"{""nominal_idr"":10000}",
+F001,Keripik kentang,,FOOD,Gurih,PCS,,"{}",
