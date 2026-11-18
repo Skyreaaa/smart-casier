@@ -1,0 +1,54 @@
+{
+  "project": "Smart Casier",
+  "date": "2026-11-18",
+  "purpose": "Non-food public source candidate audit only; not inventory",
+  "sources": [
+    {
+      "id": "OPF_NONFOOD_INDONESIA",
+      "url": "https://static.openproductsfacts.org/data/en.openproductsfacts.org.products.csv.gz",
+      "downloaded": true,
+      "download_bytes": 6496518,
+      "sha256": "a410d9be9c75135f8961480689e0977c56f57c775f89d55fdad41cd572f7c378",
+      "total_rows": 49771,
+      "indonesia_tagged_rows": 233,
+      "strict_explicit_nonfood_matches": 0,
+      "policy": "secondary source; no imports"
+    },
+    {
+      "id": "ID_PRDECT_HF_NONFOOD",
+      "url": "https://huggingface.co/datasets/reyhanksatria05/PRDECT-ID_Dataset",
+      "downloaded": true,
+      "download_bytes": 1262177,
+      "sha256": "1dfdde6bb169ad57aab4211ecf45a75a4111b774ab43932f6d39c349bfd92bde",
+      "total_rows": 5400,
+      "selected_category_rows": 1000,
+      "excluded_category_rows": 4400,
+      "filtered_food_or_contact": 9,
+      "duplicate_title_rows": 730,
+      "staged_candidate_count": 261,
+      "staging_statuses": {
+        "HOLD_LICENSE": 261
+      },
+      "category_counts": {
+        "STATIONERY": 51,
+        "AUTOMOTIVE_GENERAL": 49,
+        "HARDWARE_GENERAL": 25,
+        "ELECTRONICS_GENERAL": 73,
+        "HOUSEHOLD_NONFOOD": 63
+      },
+      "candidate_csv_sha256": "ead4407786a83273de1a333dcbe2b06e7329fb10a1a987618a8075a72ba04ad",
+      "license_claim": "cc0-1.0 in dataset card; LICENSE file empty",
+      "license_review": "PENDING"
+    }
+  ],
+  "source_files_uploaded_to_repository": false,
+  "data_privacy": "Review content, customer location, price, ratings and raw CSV not committed",
+  "approved_external_skus": 0,
+  "verified_store_skus": 0,
+  "pos_data_written": false,
+  "ci": {
+    "unit_tests": 47,
+    "conclusion": "success",
+    "run_url": "https://github.com/Skyreaaa/smart-casier/actions/runs/44273327558"
+  }
+}

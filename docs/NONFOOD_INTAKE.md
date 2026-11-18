@@ -1,6 +1,6 @@
 # Panduan Intake Dataset Barang Non-Makanan
 
-**Status:** Dua konverter lokal diuji secara otomatis. Tidak mengunduh file publik, tidak memberi izin penggunaan ulang, dan tidak menambah stok/harga POS.
+**Status:** Tiga konverter lokal diuji secara otomatis. Tidak mengunduh file publik, tidak memberi izin penggunaan ulang, dan tidak menambah stok/harga POS.
 
 ## 1. Jalur Open Products Facts
 
@@ -37,7 +37,20 @@ python -m tools.stage_dataset --db data/private/staging.db report
 
 Output **tidak** memuat customer_name, kontak, alamat, riwayat servis, harga, stok, atau kode transaksi. Kode part bukan barcode GTIN. Kategori pertama `SPARE_PARTS` perlu diperinci oleh reviewer; tidak boleh otomatis menjadi SKU final.
 
-## 3. Lapisan persetujuan dan promosi data
+## 3. Jalur data nama produk PRDECT-ID (e-commerce Indonesia)
+
+Sumber: [PRDECT-ID Dataset](https://huggingface.co/datasets/reyhanksatria05/PRDECT-ID_Dataset). Metadata dataset menyatakan CC0 1.0 tetapi file LICENSE kosong dan hak atas sumber ulasan asal belum dapat dipastikan; status di registry tetap `PENDING`.
+
+```bash
+# Unduh PRDECT-ID_Dataset.csv dari laman sumber ke data/private/ (jangan commit raw)
+python -m tools.prepare_prdect --input data/private/PRDECT-ID_Dataset.csv --out data/private/prdect_candidates.csv
+python -m tools.stage_dataset --db data/private/staging.db ingest --source ID_PRDECT_HF_NONFOOD --csv data/private/prdect_candidates.csv
+python -m tools.stage_dataset --db data/private/staging.db report
+```
+
+Konverter hanya mengambil *Category* dan *Product Name*, membatasi Automotive, Carpentry, Office & Stationery, Electronics, Household; menghapus duplikat nama persis yang sudah dinormalisasi. Harga, ulasan, lokasi, dan rating **dibuang**, barcode kosong, satuan PCS hanya kandidat, dan kategori perlu review manual. `external_id` dibuat dari hash stabil kategori + nama, bukan SKU. Hasil pengujian pada data asli: 261 kandidat, seluruhnya ditahan `HOLD_LICENSE`. Lihat [audit intake](REAL_NONFOOD_INTAKE_2026-11-18.md).
+
+## 4. Lapisan persetujuan dan promosi data
 
 ```mermaid
 flowchart LR
@@ -55,7 +68,7 @@ Saat ini seluruh **5 sumber eksternal PENDING**, sehingga kandidat yang berasal 
 
 CSV hasil export dari staging tidak sama dengan template impor POS. SKU, harga, stok dan threshold harus diverifikasi di toko terlebih dahulu; tidak ada fungsi otomatis yang menggabungkannya.
 
-## 4. Pengujian
+## 5. Pengujian
 
 ```bash
 python -m unittest discover -s tests -v
@@ -63,11 +76,12 @@ python -m unittest discover -s tests -v
 
 Test menggunakan berkas buatan sendiri, **bukan data asli Mendeley atau Open Products Facts**. Bukti tes dapat diperiksa di GitHub Actions.
 
-## 5. Target pengumpulan data asli
+## 6. Target pengumpulan data asli
 
-- 1 berkas sumber non-makanan yang berhasil diunduh secara sah dan lolos pemeriksaan lisensi/privasi.
+- [x] Berkas sumber data PRDECT-ID berhasil diunduh dan diuji dalam staging terpisah.
+- [ ] Hak pakai/privasi sumber dan pemakaian komersial dinilai sebelum pemanfaatan kandidat.
 - Hasil kurasi dengan validasi kategori, unit dan GTIN sesuai tipenya.
 - Minimal 30 SKU nyata dari rak toko sendiri untuk pengujian skema; data sumber publik tidak menggantikannya.
 - Penetapan satuan meter vs pcs dan atribut pembeda ukuran baut harus dilakukan berdasarkan kondisi produk nyata.
 
-**Belum tercapai:** 0 produk eksternal yang disetujui dan 0 SKU nyata terverifikasi.
+**Belum tercapai:** 0 produk eksternal yang disetujui dan 0 SKU nyata terverifikasi. **Sudah tersedia dalam staging uji:** 261 nama kandidat yang seluruhnya tertahan untuk audit lisensi.

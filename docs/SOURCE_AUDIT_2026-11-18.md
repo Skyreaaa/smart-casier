@@ -17,9 +17,18 @@
 3. [Open Products Facts — katalog ODbL](https://www.data.gouv.fr/datasets/open-products-facts) mencantumkan lisensi database ODbL.
 4. Untuk setiap sumber, tahap yang diperlukan: unduh secara sah → inspeksi lisensi & data → buang PII → ekstrak kolom master barang → audit duplikasi/validasi → reviewer setujui jika layak → cocokkan SKU aktual toko.
 
+## Tambahan sumber: PRDECT-ID
+
+Sumber: [PRDECT-ID Indonesian product review dataset](https://huggingface.co/datasets/reyhanksatria05/PRDECT-ID_Dataset).
+
+- Metadata Hugging Face mengklaim `cc0-1.0`, tetapi berkas `LICENSE` pada repository sumber berukuran 0 byte. Hak atas data ulasan/teks asli perlu ditinjau. **Status PENDING**.
+- Dataset asli berisi 5.400 record; tidak ada barcode SKU. Nama barang diambil secara konservatif dan disaring dari harga/ulasan/lokasi.
+- Ekstraksi menghasilkan **261 kandidat non-food** dari 1.000 baris pada lima kategori terpilih; seluruhnya masuk `HOLD_LICENSE` pada staging eksperimen.
+- Bukti checksum dan statistik lengkap: [REAL_NONFOOD_INTAKE_2026-11-18.md](REAL_NONFOOD_INTAKE_2026-11-18.md).
+
 ## Temuan teknis penting
 
-- Tidak ada data aktual yang telah diunduh ke repository pada tahap ini.
+- Data asli PRDECT-ID berhasil diunduh dan diproses di sandbox pengujian terpisah, **tidak** diunggah ke repository; data asli lain belum dipromosikan ke POS.
 - Dataset **transaksi bengkel** tidak boleh langsung dipakai sebagai master SKU. Identitas pelanggan dan riwayat transaksi di luar tujuan POS ini.
 - Dataset **e-Katalog** berisi barang procurement, bukan katalog barcode retail; nilai/harga dari sana tidak sama dengan harga jual toko.
 - **Open Products Facts** dapat menjadi kandidat terstruktur non-food: adapter `tools/prepare_opf.py` menyaring tag negara `en:indonesia`, kategori eksplisit non-food dan GTIN valid, lalu membuang kolom tambahan termasuk data pribadi/harga. Produk yang tak bertag jelas **dilewati**, bukan dipaksa cocok.
@@ -28,6 +37,7 @@
 ## Status hasil kurasi
 
 - Sumber eksternal yang disetujui: **0**.
+- Kandidat kurasi PRDECT-ID berstatus HOLD_LICENSE: **261**.
 - SKU barang nyata toko yang diverifikasi: **0**.
 - Sample data sintetis: **bukan** angka katalog retail.
 - Tidak ada klaim bahwa produk pada sumber tersedia fisik atau dijual di Indonesia hanya karena tag negara.

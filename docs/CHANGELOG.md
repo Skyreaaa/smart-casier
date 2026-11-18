@@ -1,5 +1,14 @@
 # Catatan Progres
 
+## 2026-11-18 — Intake sumber nyata + kurasi metadata (47 CI PASS)
+
+- Berhasil membaca ekspor Open Products Facts: 49.771 record, hanya 233 bertag Indonesia, **0** cocok dengan kategori non-makanan toko yang dipetakan konservatif.
+- Berhasil membaca CSV PRDECT-ID: 5.400 record, 1.000 pada 5 kategori non-food, 261 kandidat nama unik setelah filter dan deduplikasi.
+- Staging nyata terpisah: **261 HOLD_LICENSE**, **0 disetujui**, **0 promosi ke master POS**; tidak ada data ulasan, harga, lokasi, atau informasi pelanggan di-commit.
+- False positive untuk oven listrik berwarna "Putih Susu" diperbaiki dengan regresi khusus.
+- [47 tes CI lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44273327558). Bukti metodologi dan checksum: [laporan intake](REAL_NONFOOD_INTAKE_2026-11-18.md).
+
+
 ## 2026-11-18 — Audit dataset dan adapter nyata (belum ada impor riil)
 
 - Audit 5 sumber non-makanan: Mendeley bengkel (CC BY + PII), Open Products Facts (ODbL), Zenodo e-Katalog (rights tidak jelas), dua sumber GitHub (lisensi belum jelas).

@@ -88,13 +88,25 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] Filter kategori non-makanan dan guard tambahan untuk indikasi makanan yang salah kategori.
 - [x] Prototipe staging SQLite, registry sumber, validasi GTIN, deduplikasi, dan larangan memasukkan data langsung ke POS.
 - [x] Adapter lokal Open Products Facts (hanya non-food bertag Indonesia) dan spare part (hanya kolom master, tanpa data pelanggan/transaksi).
+- [x] Adapter PRDECT-ID untuk mengambil nama non-makanan dari kategori relevan; ulasan, lokasi, harga, dan atribut pelanggan tidak disalin.
+- [x] Data riil PRDECT-ID telah diproses **dalam staging pengujian terpisah**: 261 kandidat metadata, seluruhnya ditahan `HOLD_LICENSE` (bukan SKU terverifikasi).
 - [x] Persetujuan record dan sumber dengan jejak audit, termasuk penahanan kembali ketika sumber ditolak.
-- [x] Tes CI otomatis: [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions) — cek run terakhir untuk jumlah tes dan kesimpulan aktual.
+- [x] **47 pengujian lulus:** [hasil CI](https://github.com/Skyreaaa/smart-casier/actions/runs/44273327558).
 - [ ] Lisensi/privasi sumber eksternal ditinjau dan disetujui untuk ekstraksi data nyata.
-- [ ] Berkas sumber dataset non-makanan asli diperoleh secara sah dan dijalankan melalui adapter serta staging; saat ini **0 hasil nyata**.
+- [x] Berkas sumber PRDECT-ID berhasil diakses dan dikonversi; status hak pakai/privasi dan identitas SKU toko masih menunggu peninjauan.
+- [ ] Minimal 30 SKU toko nyata dan lisensi sumber eksternal dikonfirmasi untuk promosi data ke master.
 - [ ] Setidaknya 30 SKU toko nyata diverifikasi.
 
-Lima sumber eksternal (termasuk Open Products Facts berskala global, hanya diambil subset bertag Indonesia) tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
+Enam sumber eksternal (termasuk Open Products Facts dan PRDECT-ID e-commerce Indonesia) tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
+
+## Audit data nyata (bukan data master toko)
+
+[Laporan audit faktual](REAL_NONFOOD_INTAKE_2026-11-18.md) mencatat:
+
+- Open Products Facts: 49.771 baris total, 233 bertag Indonesia, **0** lolos pemetaan kategori toko secara eksplisit.
+- PRDECT-ID: 5.400 baris ulasan; 1.000 kategori terpilih; **261** kandidat nama produk setelah penolakan dan deduplikasi; **261 HOLD_LICENSE**.
+- Lisensi PRDECT-ID mengklaim CC0 dari metadata, tetapi file LICENSE kosong dan hak data ulasan aslinya belum diverifikasi; data tetap tidak dipromosikan.
+- Barang yang diverifikasi secara fisik di toko: **0 SKU**.
 
 ## Prioritas pengumpulan data
 
