@@ -68,6 +68,11 @@ try
     }
     else if(command=="checkout")
     {
+        // CLI is a software-only demo runner, never the operational cashier UI.
+        if (!Path.GetFileName(path).Contains("demo", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Checkout CLI hanya boleh dipakai pada database demo. Gunakan WPF dengan login untuk transaksi.");
+
         var id=opts.TryGetValue("request-id",out var rid)?Guid.Parse(rid):Guid.NewGuid();
         var receipt=new SalesService(db).Checkout(id,
             [new SaleLineRequest(Required(opts,"sku"),QuantityMilli(Required(opts,"qty")))],
