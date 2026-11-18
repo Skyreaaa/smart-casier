@@ -1,0 +1,29 @@
+name: Database Foundation Tests
+on:
+  push:
+    paths:
+      - 'database/**'
+      - 'data/examples/**'
+      - 'tools/**'
+      - 'tests/**'
+      - '.github/workflows/database-tests.yml'
+  pull_request:
+    paths:
+      - 'database/**'
+      - 'data/examples/**'
+      - 'tools/**'
+      - 'tests/**'
+jobs:
+  sqlite:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate demonstration data
+        run: python -m tools.import_catalog data/examples/catalog_demo.csv
+      - name: Run database regressions
+        run: python -m unittest discover -s tests -v
