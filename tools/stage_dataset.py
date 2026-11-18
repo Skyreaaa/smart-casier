@@ -22,7 +22,7 @@ ALLOWED_CATEGORIES = {
 }
 UNITS = {"PCS", "M", "TXN"}
 # Conservative flag for likely food falsely mapped to an allowed non-food category.
-FOOD_WORDS = re.compile(r"\\b(?:keripik|mi(?:e)? instan|snack|biskuit|susu|makanan|minuman|kopi bubuk|teh botol|beras|gula pasir)\\b", re.IGNORECASE)
+FOOD_WORDS = re.compile(r"\b(?:keripik|mi(?:e)? instan|snack|biskuit|susu|makanan|minuman|kopi bubuk|teh botol|beras|gula pasir)\b", re.IGNORECASE)
 
 
 def utcnow():

@@ -4,6 +4,8 @@ on:
     paths:
       - 'database/**'
       - 'data/examples/**'
+      - 'data/sources/**'
+      - 'data/templates/**'
       - 'tools/**'
       - 'tests/**'
       - '.github/workflows/database-tests.yml'
@@ -11,6 +13,8 @@ on:
     paths:
       - 'database/**'
       - 'data/examples/**'
+      - 'data/sources/**'
+      - 'data/templates/**'
       - 'tools/**'
       - 'tests/**'
 jobs:
@@ -23,7 +27,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate demonstration data
+      - name: Validate core demonstration data
         run: python -m tools.import_catalog data/examples/catalog_demo.csv
-      - name: Run database regressions
+      - name: Run core and staging tests
         run: python -m unittest discover -s tests -v
+      - name: Smoke-test non-food staging CLI
+        run: |
+          mkdir -p data/private
+          python -m tools.stage_dataset --db data/private/staging.db init
+          python -m tools.stage_dataset --db data/private/staging.db ingest --source DEMO_SYNTHETIC_NONFOOD --csv data/examples/nonfood_staging_demo.csv
+          python -m tools.stage_dataset --db data/private/staging.db report
