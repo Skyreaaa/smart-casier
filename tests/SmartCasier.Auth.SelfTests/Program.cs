@@ -52,7 +52,7 @@ static long Number(PosDatabase db,string query)
 Run("first run has no credentials until setup",()=>WithDatabase((db,auth)=>
 {
     Assert(!auth.HasUsers(),"New database already has accounts");
-    Assert(Number(db,"PRAGMA user_version;")==4,"Schema not migrated to v4");
+    Assert(Number(db,"PRAGMA user_version;")==5,"Schema not migrated to v5");
 }));
 
 Run("first admin bootstrap and login",()=>WithDatabase((db,auth)=>
@@ -210,5 +210,60 @@ Run("deactivated admin loses privileged access",()=>WithDatabase((db,auth)=>
     Throws<SecurityException>(()=>auth.RequireAdmin(admin));
 }));
 
+
+Run("checkout requires active operator even when core called directly",()=>WithDatabase((db,auth)=>
+{
+    DemoSeeder.Seed(db);
+    var sales = new SalesService(db);
+    var id = Guid.NewGuid();
+    Throws<SecurityException>(()=>sales.Checkout(id,[new("BAUT-M8X30",1000)],5000,null));
+    Assert(Number(db,"SELECT COUNT(*) FROM sales;")==0,"Unauthorized checkout wrote sale");
+    Assert(new CatalogService(db).Search("BAUT-M8X30")[0].OnHandMilli==3000,"Unauthorized stock change");
+}));
+Run("cashier checkout records operator identity on sale",()=>WithDatabase((db,auth)=>
+{
+    DemoSeeder.Seed(db);
+    var admin=Owner(auth);
+    var secret=NewPassword();
+    auth.CreateCashier(admin,"cashierone",secret);
+    var cashier=auth.Login("cashierone",secret);
+    var sale=new SalesService(db).Checkout(Guid.NewGuid(),
+        [new("BAUT-M8X30",1000)],5000,cashier);
+    Assert(sale.TotalIdr==1200,"Cashier checkout failed");
+    using var conn=db.Open();
+    using var cmd=conn.CreateCommand();
+    cmd.CommandText="SELECT operator_id FROM sales WHERE sale_id=@id;";
+    cmd.Parameters.AddWithValue("@id",sale.SaleId.ToString("N"));
+    Assert(string.Equals(cmd.ExecuteScalar() as string,cashier.UserId,StringComparison.Ordinal),
+        "Receipt did not record cashier id");
+}));
+Run("receipt and history require authenticated operator",()=>WithDatabase((db,auth)=>
+{
+    DemoSeeder.Seed(db);
+    var admin=Owner(auth);
+    var sale=new SalesService(db).Checkout(Guid.NewGuid(),
+        [new("BAUT-M8X30",1000)],5000,admin);
+    Throws<SecurityException>(()=>new SalesService(db).FindReceipt(sale.SaleId,null));
+    Throws<SecurityException>(()=>new SalesHistoryService(db).Search(null));
+    Assert(new SalesHistoryService(db).Search(admin).Count==1,"Admin cannot view history");
+}));
+Run("deactivated cashier cannot checkout with old session",()=>WithDatabase((db,auth)=>
+{
+    DemoSeeder.Seed(db);
+    var admin=Owner(auth);
+    var secret=NewPassword();
+    auth.CreateCashier(admin,"cashierone",secret);
+    var cashier=auth.Login("cashierone",secret);
+    using(var conn=db.Open())
+    using(var cmd=conn.CreateCommand())
+    {
+        cmd.CommandText="UPDATE app_users SET active=0 WHERE id=@id;";
+        cmd.Parameters.AddWithValue("@id",cashier.UserId);
+        cmd.ExecuteNonQuery();
+    }
+    Throws<SecurityException>(()=>new SalesService(db).Checkout(
+        Guid.NewGuid(),[new("BAUT-M8X30",1000)],5000,cashier));
+    Assert(Number(db,"SELECT COUNT(*) FROM sales;")==0,"Deactivated cashier created sale");
+}));
 Console.WriteLine($"AUTHORIZATION TESTS: {passed} passed, {failed} failed");
 if(failed>0) Environment.ExitCode=1;

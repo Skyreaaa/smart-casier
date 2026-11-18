@@ -13,12 +13,15 @@ public partial class SalesHistoryDialog : Window
     private const int PageSize = 100;
     private static readonly CultureInfo Id = CultureInfo.GetCultureInfo("id-ID");
     private readonly SalesHistoryService _history;
+    private readonly AuthSession _operatorSession;
     private int _offset;
 
     public ObservableCollection<HistoryRow> Sales { get; } = [];
 
-    public SalesHistoryDialog(PosDatabase database)
+    public SalesHistoryDialog(PosDatabase database, AuthSession operatorSession)
     {
+        new AuthService(database).RequireOperator(operatorSession);
+        _operatorSession = operatorSession;
         InitializeComponent();
         DataContext = this;
         _history = new SalesHistoryService(database);
@@ -51,7 +54,7 @@ public partial class SalesHistoryDialog : Window
     {
         try
         {
-            var records = _history.Search(FilterBox.Text, PageSize, _offset);
+            var records = _history.Search(_operatorSession, FilterBox.Text, PageSize, _offset);
             Sales.Clear();
             foreach (var item in records)
                 Sales.Add(new HistoryRow(item));
@@ -103,7 +106,7 @@ public partial class SalesHistoryDialog : Window
             return;
         try
         {
-            var receipt = _history.Receipt(row.SaleId)
+            var receipt = _history.Receipt(row.SaleId, _operatorSession)
                 ?? throw new InvalidOperationException("Struk tidak ditemukan pada database.");
             var parts = new List<string>
             {

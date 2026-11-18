@@ -230,7 +230,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (!_initialized || _database is null) return;
         try
         {
-            new SalesHistoryDialog(_database) { Owner = this }.ShowDialog();
+            new SalesHistoryDialog(_database,
+                _session ?? throw new System.Security.SecurityException("Sesi operator diperlukan."))
+                { Owner = this }.ShowDialog();
         }
         catch (Exception ex)
         {
@@ -474,7 +476,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             var request = Cart.Select(row => new SaleLineRequest(
                 row.Sku, row.QuantityMilli)).ToArray();
-            var receipt = _sales.Checkout(_requestId, request, paid, CartTotal());
+            var receipt = _sales.Checkout(_requestId, request, paid, _session, CartTotal());
             Cart.Clear();
             ResetPendingRequest();
             PaidBox.Text = "0";

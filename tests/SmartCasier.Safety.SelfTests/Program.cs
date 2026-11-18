@@ -52,20 +52,20 @@ static void Execute(PosDatabase db,string sql)
 static Guid Sale(PosDatabase db,string sku="BAUT-M8X30")
 {
     var id=Guid.NewGuid();
-    new SalesService(db).Checkout(id,[new(sku,1000)],50000);
+    new TestSales(db).Checkout(id,[new(sku,1000)],50000);
     return id;
 }
 
 Test("empty sale history returns empty collection",()=>WithDemo((db,_) =>
 {
-    Assert(new SalesHistoryService(db).Search().Count==0,"Empty database returned sales");
+    Assert(new TestHistory(db).Search().Count==0,"Empty database returned sales");
 }));
 
 Test("sale history ordered by newest row and has snapshot totals",()=>WithDemo((db,_) =>
 {
     var first=Sale(db);
     var second=Sale(db,"BAUT-M8X35");
-    var rows=new SalesHistoryService(db).Search();
+    var rows=new TestHistory(db).Search();
     Assert(rows.Count==2,"Two sales expected");
     Assert(rows[0].SaleId==second && rows[1].SaleId==first,"Unexpected sale order");
     Assert(rows[0].TotalIdr==1400 && rows[0].LineCount==1,"Wrong summary");
@@ -75,7 +75,7 @@ Test("sale history ordered by newest row and has snapshot totals",()=>WithDemo((
 Test("search by receipt SKU and product name",()=>WithDemo((db,_) =>
 {
     var id=Sale(db);
-    var service=new SalesHistoryService(db);
+    var service=new TestHistory(db);
     var receipt=service.Search()[0].ReceiptNo;
     Assert(service.Search(receipt).Single().SaleId==id,"Receipt lookup failed");
     Assert(service.Search("BAUT-M8X30").Single().SaleId==id,"SKU lookup failed");
@@ -86,7 +86,7 @@ Test("search by receipt SKU and product name",()=>WithDemo((db,_) =>
 Test("history query treats percent underscore literally",()=>WithDemo((db,_) =>
 {
     Sale(db);
-    var svc=new SalesHistoryService(db);
+    var svc=new TestHistory(db);
     Assert(svc.Search("%").Count==0,"Wildcard should be escaped");
     Assert(svc.Search("_").Count==0,"Wildcard should be escaped");
 }));
@@ -95,7 +95,7 @@ Test("pagination and invalid range",()=>WithDemo((db,_) =>
 {
     Sale(db);
     Sale(db,"BAUT-M8X35");
-    var svc=new SalesHistoryService(db);
+    var svc=new TestHistory(db);
     Assert(svc.Search(limit:1,offset:1).Count==1,"Page two not returned");
     Assert(svc.Search(limit:1,offset:2).Count==0,"Expected end of list");
     Throws<ArgumentOutOfRangeException>(()=>svc.Search(limit:0));
@@ -108,7 +108,7 @@ Test("saved receipt price snapshot survives price change",()=>WithDemo((db,_) =>
 {
     var saleId=Sale(db);
     new TestEditor(db).UpdatePrice("BAUT-M8X30",9000);
-    var receipt=new SalesHistoryService(db).Receipt(saleId);
+    var receipt=new TestHistory(db).Receipt(saleId);
     Assert(receipt is not null && receipt.Lines[0].PriceIdr==1200,"Historical price was altered");
 }));
 
@@ -231,4 +231,19 @@ sealed class TestSafety(PosDatabase db)
         => safety.BackupToNewFile(destination,DemoAdmin.For(db));
     public BackupFileInfo RestoreToNewFile(string backup,string destination)
         => safety.RestoreToNewFile(backup,destination,DemoAdmin.For(db));
+}
+
+sealed class TestSales(PosDatabase database)
+{
+    private readonly SalesService service = new(database);
+    public SaleReceipt Checkout(Guid id, IEnumerable<SaleLineRequest> lines, long paid, long? expectedTotalIdr = null)
+        => service.Checkout(id, lines, paid, DemoAdmin.For(database), expectedTotalIdr);
+}
+sealed class TestHistory(PosDatabase database)
+{
+    private readonly SalesHistoryService history = new(database);
+    private readonly SalesService sales = new(database);
+    public IReadOnlyList<SaleHistoryRow> Search(string? text = null, int limit = 100, int offset = 0)
+        => history.Search(DemoAdmin.For(database), text, limit, offset);
+    public SaleReceipt? Receipt(Guid id) => history.Receipt(id, DemoAdmin.For(database));
 }

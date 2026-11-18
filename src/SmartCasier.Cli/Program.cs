@@ -33,7 +33,7 @@ try
         seed-demo --db data/private/demo-pos.db --confirm-synthetic
         search    --db data/private/demo-pos.db --query baut
         stock     --db data/private/demo-pos.db
-        checkout  --db data/private/demo-pos.db --sku BAUT-M8X30 --qty 1 --paid 5000 [--request-id GUID]
+        checkout  dinonaktifkan: transaksi wajib melalui WPF dengan login operator
         All demo prices/stock are synthetic, not actual store data.
         """);
         return;
@@ -68,20 +68,8 @@ try
     }
     else if(command=="checkout")
     {
-        // CLI is a software-only demo runner, never the operational cashier UI.
-        if (!Path.GetFileName(path).Contains("demo", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException(
-                "Checkout CLI hanya boleh dipakai pada database demo. Gunakan WPF dengan login untuk transaksi.");
-
-        var id=opts.TryGetValue("request-id",out var rid)?Guid.Parse(rid):Guid.NewGuid();
-        var receipt=new SalesService(db).Checkout(id,
-            [new SaleLineRequest(Required(opts,"sku"),QuantityMilli(Required(opts,"qty")))],
-            long.Parse(Required(opts,"paid"),CultureInfo.InvariantCulture));
-        Console.WriteLine("REQUEST_ID="+id);
-        Console.WriteLine("RECEIPT="+receipt.ReceiptNo);
-        Console.WriteLine("TOTAL_IDR="+receipt.TotalIdr);
-        Console.WriteLine("CHANGE_IDR="+receipt.ChangeIdr);
-        Console.WriteLine("ALREADY_PROCESSED="+receipt.AlreadyProcessed);
+        throw new NotSupportedException(
+            "Checkout CLI dinonaktifkan. Gunakan Windows WPF dengan login operator.");
     }
     else throw new ArgumentException("Unknown command "+command);
 }

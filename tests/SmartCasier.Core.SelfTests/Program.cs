@@ -62,7 +62,7 @@ Run("stock threshold below 3 not at 3",()=>Demo(db=>
 }));
 Run("checkout saves receipt, cash and stock",()=>Demo(db=>
 {
-    var receipt=new SalesService(db).Checkout(Guid.NewGuid(),[new("BAUT-M8X30",1000)],5000);
+    var receipt=new TestSales(db).Checkout(Guid.NewGuid(),[new("BAUT-M8X30",1000)],5000);
     Assert(receipt.TotalIdr==1200&&receipt.ChangeIdr==3800,"Wrong total/change");
     Assert(receipt.Lines.Count==1&&receipt.Lines[0].PriceIdr==1200,"Bad receipt");
     Assert(new CatalogService(db).Search("BAUT-M8X30")[0].OnHandMilli==2000,"Stock did not decrease");
@@ -70,7 +70,7 @@ Run("checkout saves receipt, cash and stock",()=>Demo(db=>
 Run("replay same request cannot double-charge",()=>Demo(db=>
 {
     var id=Guid.NewGuid();
-    var service=new SalesService(db);
+    var service=new TestSales(db);
     service.Checkout(id,[new("BAUT-M8X30",1000)],5000);
     var replay=service.Checkout(id,[new("baut-m8x30",1000)],5000);
     Assert(replay.AlreadyProcessed,"Replay not detected");
@@ -80,40 +80,40 @@ Run("replay same request cannot double-charge",()=>Demo(db=>
 }));
 Run("insufficient cash rolls back",()=>Demo(db=>
 {
-    Throws<InvalidOperationException>(()=>new SalesService(db).Checkout(
+    Throws<InvalidOperationException>(()=>new TestSales(db).Checkout(
         Guid.NewGuid(),[new("BAUT-M8X30",1000)],0));
     Assert(Query(db,"SELECT COUNT(*) FROM sales;")==0,"Partial sale");
     Assert(new CatalogService(db).Search("BAUT-M8X30")[0].OnHandMilli==3000,"Stock changed");
 }));
 Run("insufficient stock rolls back",()=>Demo(db=>
 {
-    Throws<InvalidOperationException>(()=>new SalesService(db).Checkout(
+    Throws<InvalidOperationException>(()=>new TestSales(db).Checkout(
         Guid.NewGuid(),[new("BAUT-M8X30",4000)],20000));
     Assert(Query(db,"SELECT COUNT(*) FROM sales;")==0,"Partial sale");
 }));
 Run("no fractional pieces",()=>Demo(db=>
 {
-    Throws<ArgumentException>(()=>new SalesService(db).Checkout(
+    Throws<ArgumentException>(()=>new TestSales(db).Checkout(
         Guid.NewGuid(),[new("BAUT-M8X30",500)],10000));
 }));
 Run("meter price exact and stock decreases",()=>Demo(db=>
 {
-    var receipt=new SalesService(db).Checkout(Guid.NewGuid(),[new("KMY-MERAH",2500)],15000);
+    var receipt=new TestSales(db).Checkout(Guid.NewGuid(),[new("KMY-MERAH",2500)],15000);
     Assert(receipt.TotalIdr==12500,"Meter price mismatch");
     Assert(new CatalogService(db).Search("KMY-MERAH")[0].OnHandMilli==10000,"Meter stock mismatch");
 }));
 Run("multiple item failure is atomic",()=>Demo(db=>
 {
-    Throws<KeyNotFoundException>(()=>new SalesService(db).Checkout(Guid.NewGuid(),
+    Throws<KeyNotFoundException>(()=>new TestSales(db).Checkout(Guid.NewGuid(),
         [new("BAUT-M8X30",1000),new("UNKNOWN",1000)],50000));
     Assert(Query(db,"SELECT COUNT(*) FROM sales;")==0,"Partial cart sale");
 }));
 Run("read saved receipt independent of price change",()=>Demo(db=>
 {
     var id=Guid.NewGuid();
-    new SalesService(db).Checkout(id,[new("BAUT-M8X30",1000)],5000);
+    new TestSales(db).Checkout(id,[new("BAUT-M8X30",1000)],5000);
     Exec(db,"UPDATE variants SET sale_price_idr=9999 WHERE sku='BAUT-M8X30';");
-    var receipt=new SalesService(db).FindReceipt(id);
+    var receipt=new TestSales(db).FindReceipt(id);
     Assert(receipt is not null&&receipt.Lines[0].PriceIdr==1200,"Price snapshot changed");
 }));
 Run("SQLite stock trigger blocks negative balance",()=>Demo(db=>
@@ -125,7 +125,7 @@ Run("SQLite stock trigger blocks negative balance",()=>Demo(db=>
 Run("expected cart total detects stale product price",()=>Demo(db=>
 {
     var id=Guid.NewGuid();
-    var s=new SalesService(db);
+    var s=new TestSales(db);
     Throws<InvalidOperationException>(()=>s.Checkout(
         id,[new("BAUT-M8X30",1000)],5000,expectedTotalIdr:999));
     Assert(Query(db,"SELECT COUNT(*) FROM sales;")==0,"Stale cart was charged");
@@ -134,3 +134,19 @@ Run("expected cart total detects stale product price",()=>Demo(db=>
 }));
 Console.WriteLine("TEST SUMMARY: "+passed+" passed, "+failed+" failed");
 if(failed>0)Environment.ExitCode=1;
+
+sealed class TestSales(PosDatabase database)
+{
+    private readonly SalesService service = new(database);
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PosDatabase, AuthSession> Sessions = new();
+    private AuthSession Operator => Sessions.GetValue(database, db =>
+    {
+        var auth = new AuthService(db);
+        var pass = Guid.NewGuid().ToString("N") + "Aa!";
+        auth.CreateFirstAdmin("testoperator", pass);
+        return auth.Login("testoperator", pass);
+    });
+    public SaleReceipt Checkout(Guid id, IEnumerable<SaleLineRequest> lines, long paid, long? expectedTotalIdr = null)
+        => service.Checkout(id, lines, paid, Operator, expectedTotalIdr);
+    public SaleReceipt? FindReceipt(Guid id) => service.FindReceipt(id, Operator);
+}
