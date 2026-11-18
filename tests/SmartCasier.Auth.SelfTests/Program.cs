@@ -165,8 +165,10 @@ Run("cashier cannot edit prices or stock even directly via Core",()=>WithDatabas
 Run("cashier cannot make backup or restore",()=>WithDatabase((db,auth)=>
 {
     var owner=Owner(auth);
-    var folder=Path.GetDirectoryName(Path.GetFullPath(
-        new SqliteConnectionStringBuilder(db.Open().ConnectionString).DataSource))!;
+    string folder;
+    using (var open = db.Open())
+        folder = Path.GetDirectoryName(Path.GetFullPath(
+            new SqliteConnectionStringBuilder(open.ConnectionString).DataSource))!;
     var backup=Path.Combine(folder,"backup.db");
     var restore=Path.Combine(folder,"restore.db");
     var svc=new DatabaseSafetyService(db);
