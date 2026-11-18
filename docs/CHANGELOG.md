@@ -1,5 +1,12 @@
 # Catatan Progres
 
+## 2026-11-18 — Pivot software-only
+
+- Kunjungan toko, 30 SKU asli, pengadaan/kalibrasi hardware, kamera fisik, uji potong, pilot, dan metrologi ditandai `DEFERRED_ON_SITE` pada [kebijakan implementasi](EXECUTION_POLICY_SOFTWARE_ONLY.md).
+- Pekerjaan software/CI/simulasi **lanjut tanpa menunggu validasi fisik**; persyaratan lapangan tetap wajib sebelum operasional komersial.
+- Status tugas fisik tidak dihitung sebagai selesai.
+
+
 ## 2026-11-18 — Intake sumber nyata + kurasi metadata (47 CI PASS)
 
 - Berhasil membaca ekspor Open Products Facts: 49.771 record, hanya 233 bertag Indonesia, **0** cocok dengan kategori non-makanan toko yang dipetakan konservatif.

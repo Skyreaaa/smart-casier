@@ -1,5 +1,8 @@
 # Laporan Progres — Smart Casier
 
+**EXECUTION MODE: SOFTWARE_ONLY** — [detail keputusan dan daftar tugas fisik ditunda](EXECUTION_POLICY_SOFTWARE_ONLY.md). Tugas lapangan tidak dihapus atau di-centang. Ketiadaan 30 SKU nyata tidak memblokir development aplikasi dengan fixture sintetis.
+
+
 **Per 18 November 2026** · Tahap **Discovery → Persiapan Master Data**
 
 ## Ringkasan terverifikasi
@@ -22,7 +25,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] **SC-REQ-02** — Fallback manual dan konfirmasi akhir kasir
 - [x] **SC-REQ-03** — Batas hardware Rp10 juta; PC tersedia
 - [x] **SC-REQ-04** — Alur panjang -> pilih produk/warna -> konfirmasi
-- [ ] **SC-REQ-05** — Validasi kebutuhan lewat contoh barang dan observasi toko
+- [ ] **SC-REQ-05** — [DEFERRED_ON_SITE] Validasi kebutuhan lewat contoh barang dan observasi toko
 
 ### 2. Repository & dokumentasi — 2/4
 
@@ -36,7 +39,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] **SC-DAT-01** — Kamus data produk, kategori, varian, satuan
 - [x] **SC-DAT-02** — ERD dan aturan relasi SKU/variant
 - [x] **SC-DAT-03** — Template CSV dan validasi impor
-- [ ] **SC-DAT-04** — 30 SKU sampel yang diverifikasi
+- [ ] **SC-DAT-04** — [DEFERRED_ON_SITE] 30 SKU sampel yang diverifikasi
 - [x] **SC-DAT-05** — Migrasi schema SQLite
 - [x] **SC-DAT-06** — Tes integritas database dan stok
 
@@ -59,12 +62,18 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 
 ### 6. Visi komputer & pilot — 0/6
 
-- [ ] **SC-AI-01** — Benchmark kamera dan kalibrasi
+- [ ] **SC-AI-01** — [DEFERRED_ON_SITE untuk kamera nyata; simulasi software tetap lanjut] Benchmark kamera dan kalibrasi
 - [ ] **SC-AI-02** — Baseline pencarian kandidat visual
 - [ ] **SC-AI-03** — Estimasi ukuran + penolakan kandidat ambigu
-- [ ] **SC-AI-04** — Integrasi perangkat fisik
-- [ ] **SC-AI-05** — Pemeriksaan persyaratan metrologi legal
-- [ ] **SC-AI-06** — Pilot, metrik akurasi dan waktu transaksi
+- [ ] **SC-AI-04** — [DEFERRED_ON_SITE] Integrasi perangkat fisik
+- [ ] **SC-AI-05** — [DEFERRED_ON_SITE + LEGAL] Pemeriksaan persyaratan metrologi legal
+- [ ] **SC-AI-06** — [DEFERRED_ON_SITE] Pilot, metrik akurasi dan waktu transaksi
+
+## Aturan fase software-only
+
+- Semua bukti cek alat, SKU asli, observasi toko, akurasi dan legal metrologi dicatat `DEFERRED_ON_SITE` dalam [execution policy](EXECUTION_POLICY_SOFTWARE_ONLY.md).
+- Fase implementasi POS **diizinkan dimulai sekarang** memakai database dan data sintetis; bukan menunggu validasi fisik.
+- Dasbor 11/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
 
 ## Gate dan definisi selesai
 

@@ -1,5 +1,7 @@
 # Smart Casier
 
+**Execution policy (18 Nov 2026):** [SOFTWARE ONLY — tugas fisik ditunda dan dicatat](docs/EXECUTION_POLICY_SOFTWARE_ONLY.md). Pengujian/pendataan fisik **bukan prasyarat implementasi software**; wajib sebelum deploy toko/komersial.
+
 > **Status: Database Foundation + Non-food Staging v0.3** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata non-makanan dari dataset asli sudah dikurasi dan ditahan untuk review hak pakai; 0 SKU toko diverifikasi dan 0 produk masuk POS**.
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)

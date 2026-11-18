@@ -1,5 +1,8 @@
 # Roadmap Implementasi Smart Casier
 
+> **Prioritas aktif: SOFTWARE_ONLY.** [Daftar tugas kunjungan/alat fisik ditunda](EXECUTION_POLICY_SOFTWARE_ONLY.md). Software boleh dilanjutkan dengan fixture sintetis; gate fisik tetap wajib sebelum operasional toko.
+
+
 > Durasi estimasi untuk tim kecil; **bukan tanggal rilis yang sudah dijanjikan**. Hardware/ML mengikuti validasi tahap sebelumnya.
 
 **Update 18 November 2026:** Adapter [Open Products Facts + master spare part](NONFOOD_INTAKE.md) tersedia dan [audit sumber](SOURCE_AUDIT_2026-11-18.md) dicatat. Data nyata terverifikasi tetap 0 SKU.
@@ -17,6 +20,13 @@
 | 4. Prototipe hardware & test | Minggu 9–14 | Kamera, barcode, roller & alarm diuji | Fase 3, komponen tersedia |
 | 5. Pilot toko dan metrologi | Setelah fase 4 | Uji toko, toleransi dan persyaratan legal dipenuhi | Fase 4 |
 | 6. Vision SKU spesifik | Setelah POS stabil | Benchmark visual + dimensi, ketidakpastian ditangani | Dataset nyata |
+
+## Perubahan urutan kerja 18 November 2026
+
+- **Sekarang:** implementasi SQLite POS Core, pencarian, inventaris, transaksi atomik, tampilan Windows, laporan dan simulator perangkat.
+- **Tidak memblokir coding:** observasi toko, 30 SKU nyata, pembelian/perakitan hardware, uji kamera fisik, kalibrasi mekanik dan uji toko. Semuanya `DEFERRED_ON_SITE`.
+- **Belum boleh deploy komersial:** hasil ukur fisik belum diverifikasi dan persyaratan metrologi legal belum diselesaikan.
+- Estimasi minggu di bawah adalah baseline lama; jadwal pelaksanaan berubah mengikuti fokus software.
 
 ## Dependensi visual
 
