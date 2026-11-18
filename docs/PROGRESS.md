@@ -8,9 +8,9 @@
 ## Ringkasan terverifikasi
 
 - **13/32 checklist selesai (41%):** termasuk dasar database dan 2 acceptance criteria POS. Angka bukan kesiapan produksi.
-- **Aplikasi WPF GUI, POS Core, dan editor SKU lokal tersedia.** Build desktop dan suite regresi di Windows/Linux [lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437); klik end-to-end/aksesibilitas belum diuji langsung; belum ada stok toko asli maupun hardware.
+- **Aplikasi WPF GUI, POS Core, editor SKU, histori struk dan backup/restore SQLite aman tersedia.** [Build/test Windows dan Linux lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781). Restore menghasilkan DB baru, belum menggantikan DB aktif; klik UI dan aksesibilitas belum diuji; tidak ada data toko nyata.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** histori transaksi, backup/restore, role admin, dan simulator perangkat. Validasi SKU nyata tetap DEFERRED_ON_SITE.
+- **Tugas aktif berikutnya:** autentikasi/role admin, aktivasi restore terkontrol, backup terjadwal, dan simulator barcode/encoder. Validasi SKU nyata tetap DEFERRED_ON_SITE.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -49,8 +49,8 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] **SC-POS-02** — Varian dan satuan pcs/meter (UI + Core + tes)
 - [x] **SC-POS-03** — Keranjang dan transaksi dasar (UI + Core + tes)
 - [ ] **SC-POS-04** — Pergerakan stok + peringatan ambang per SKU
-- [ ] **SC-POS-05** — Checkout, pembayaran, struk dan riwayat
-- [ ] **SC-POS-06** — Backup/restore dan penanganan gangguan
+- [ ] **SC-POS-05** — Checkout, pembayaran, struk dan riwayat (UI histori + receipt tersimpan; cetak/ekspor struk dan UAT belum selesai)
+- [ ] **SC-POS-06** — Backup/restore dan penanganan gangguan (online backup + restore ke FILE BARU lulus CI; aktivasi, disaster recovery dan jadwal otomatis belum)
 
 ### 5. Simulator perangkat — 0/5
 
@@ -81,10 +81,12 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] Checkout lokal atomik, idempotency request, harga snapshot IDR, stok PCS/M, batas stok tidak negatif.
 - [x] [14 tes integrasi](../tests/SmartCasier.Core.SelfTests/Program.cs) pada [CI Windows + Linux (PASS)](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
 - [x] [GUI WPF](../src/SmartCasier.Desktop), [editor SKU](../src/SmartCasier.Core/ProductCatalogEditor.cs), [tes katalog](../tests/SmartCasier.Catalog.SelfTests/Program.cs), [CI Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437).
-- [ ] CRUD metadata lengkap, backup/restore, laporan lengkap, refund, payment selain tunai, role/permissions, testing klik GUI dan aksesibilitas.
+- [x] Histori transaksi read-only dan lookup receipt; tes pencarian dan snapshot harga.
+- [x] SQLite WAL backup aman serta restore terverifikasi ke file baru; [tes Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781).
+- [ ] CRUD metadata lengkap, aktivasi restore, backup terjadwal/enkripsi, laporan lengkap, refund, payment selain tunai, role/permissions, dan tes klik GUI.
 - [ ] Hardware adapter dan verifikasi fisik tetap DEFERRED_ON_SITE sesuai policy.
 
-**Checklist utama 13/32**: dua kriteria dasar POS ditandai selesai secara software. Uji interaksi GUI, hak akses, backup, laporan, dan seluruh bukti fisik tetap terbuka; ini **bukan** kelulusan fase operasional.
+**Checklist utama 13/32** tetap: histori dan backup dibuat secara parsial, tetapi SC-POS-05 membutuhkan cetak/ekspor receipt serta SC-POS-06 membutuhkan recovery operasional lebih lengkap. Tidak ada tugas lapangan yang dianggap selesai.
 
 ## Gate dan definisi selesai
 

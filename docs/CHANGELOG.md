@@ -1,5 +1,15 @@
 # Catatan Progres
 
+## 2026-11-18 — WPF v0.2: histori transaksi dan keamanan SQLite
+
+- [Riwayat transaksi](../src/SmartCasier.Core/SalesHistoryService.cs) read-only dengan pencarian receipt/SKU/nama, pagination, rincian harga snapshot pada UI.
+- [DatabaseSafetyService](../src/SmartCasier.Core/DatabaseSafetyService.cs) memakai `SqliteConnection.BackupDatabase` agar WAL konsisten; memeriksa quick_check, foreign_key_check dan skema POS v3.
+- Restore **hanya** ke file DB baru, tidak menimpa/menukar DB aktif. Tujuan diklaim dengan `FileMode.CreateNew` agar file pengguna tidak terhapus.
+- [Tes sejarah dan backup/recovery](../tests/SmartCasier.Safety.SelfTests/Program.cs) ditambahkan ke CI Windows + Linux.
+- [CI berhasil](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781), [panduan](SALES_HISTORY_AND_BACKUP.md); tetap `13/32` checklist karena aktivasi restore, backup terjadwal dan receipt cetak belum selesai.
+- Belum ada uji visual GUI, hak akses admin, enkripsi backup, penggunaan hardware atau toko.
+
+
 ## 2026-11-18 — Windows WPF GUI + katalog editor (CI PASS)
 
 - Antarmuka WPF untuk pencarian SKU/alias/barcode, keranjang, pembayaran tunai, dan notifikasi; F2 fokus cari, F4 checkout.

@@ -2,12 +2,12 @@
 
 **Mode:** SOFTWARE_ONLY — **bukan aplikasi siap dipakai sebagai kasir komersial**.  
 **Teknologi:** WPF, C#/.NET 10, SQLite WAL, offline, satu PC Windows.  
-**Status bukti:** [Build Windows + Linux dan pengujian POS/katalog lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
+**Status bukti:** [Build Windows + Linux dan pengujian POS/katalog/history/backup lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
 
 ## Dapat dijalankan dari GitHub Actions
 
 1. Masuk ke repository private [Smart Casier](https://github.com/Skyreaaa/smart-casier).
-2. Buka [workflow software Windows terakhir yang lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437).
+2. Buka [workflow software Windows terakhir yang lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781).
 3. Di bagian *Artifacts*, pilih `smart-casier-windows-demo` (artifact retensi 7 hari dari tanggal run), ekstrak semua berkas dalam satu folder.
 4. Instal **.NET 10 Desktop Runtime x64** di Windows bila belum ada (ini versi **framework-dependent**, bukan installer mandiri).
 5. Dari PowerShell pada folder hasil ekstrak jalankan:
@@ -64,16 +64,18 @@ Saat membuat varian baru untuk keluarga yang sama, gunakan **kode keluarga dan n
 - **Admin/security:** pengelolaan harga/stok belum memiliki login/role atau audit user. Jalankan hanya dalam konteks demo/terkontrol.
 - **CRUD lengkap:** belum tersedia edit nama/atribut/varian, penghapusan lunak, harga historis per perubahan, daftar pemasok.
 - **POS:** belum ada tampilan riwayat penjualan, retur, printer struk, diskon/pajak, pembayaran non-tunai, dan fulfillment pulsa.
-- **Data protection:** backup dan restore resmi belum dibuat; belum diuji pemadaman listrik/korupsi database, keamanan akses lokal, atau penyimpanan jangka panjang.
+- **Data protection:** backup dan restore ke file baru tersedia, tetapi belum ada jadwal/enkripsi dan prosedur aktivasi pemulihan. Belum diuji pemadaman listrik, akses lokal, atau penyimpanan jangka panjang.
 - **Hardware:** kamera AI, barcode scanner khusus, encoder, display dan cutter tidak terintegrasi. Input barcode dari scanner keyboard HID masih perlu diuji fisik (ditunda).
 - **Legal/operasional:** semua [DEFERRED_ON_SITE](EXECUTION_POLICY_SOFTWARE_ONLY.md) tetap wajib sebelum digunakan secara komersial.
 
 ## Sprint software berikutnya
 
-1. Histori transaksi/read-only receipt dengan filter dan pencarian.
-2. Backup/restore SQLite dengan verifikasi integritas dan tata cara recovery yang aman.
+1. Autentikasi admin dan audit perubahan harga/stok (belum tersedia).
+2. Prosedur aktivasi hasil restore secara aman, serta backup otomatis yang diverifikasi.
 3. Login serta pembatasan izin admin untuk perubahan harga/stok.
 4. Lengkapi pengelolaan SKU (edit metadata, nonaktifkan, audit harga).
 5. Simulator device events — scanner dan meter encoder — tanpa menuntut hardware tersedia.
+
+**Pembaruan v0.2:** Riwayat receipt dan backup/restore aman ke file BARU tersedia dalam WPF. [Panduan dan keterbatasan pemulihan](SALES_HISTORY_AND_BACKUP.md).
 
 **Definisi selesai versi ini:** source ter-commit, aplikasi WPF terkompilasi, tes bisnis lulus, artifact tersedia, dan gap pengujian UI dicatat. Tidak ada klaim *production ready*.

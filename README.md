@@ -1,14 +1,14 @@
 # Smart Casier
 
-**Aplikasi Windows:** [Panduan WPF + instalasi demo](docs/WINDOWS_DESKTOP_V0_1.md) · [Build Windows/Linux dan artifact](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437) · [POS Core + CLI](docs/SOFTWARE_POS_CORE.md)
+**Aplikasi Windows:** [Panduan instalasi WPF](docs/WINDOWS_DESKTOP_V0_1.md) · [Riwayat dan backup/restore](docs/SALES_HISTORY_AND_BACKUP.md) · [Build terbaru Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781) · [POS Core + CLI](docs/SOFTWARE_POS_CORE.md)
 
 **Execution policy (18 Nov 2026):** [SOFTWARE ONLY — tugas fisik ditunda dan dicatat](docs/EXECUTION_POLICY_SOFTWARE_ONLY.md). Pengujian/pendataan fisik **bukan prasyarat implementasi software**; wajib sebelum deploy toko/komersial.
 
-> **Status: Software-Only Windows Desktop v0.1 + Database Foundation + Non-food Staging** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata dari sumber luar tetap ditahan untuk review hak pakai; 0 SKU toko nyata diverifikasi dan 0 kandidat eksternal masuk master POS.**
+> **Status: Software-Only Windows Desktop v0.2 (Riwayat + Backup) + Database Foundation + Non-food Staging** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata dari sumber luar tetap ditahan untuk review hak pakai; 0 SKU toko nyata diverifikasi dan 0 kandidat eksternal masuk master POS.**
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
-![Status](https://img.shields.io/badge/status-wpf%20desktop%20built-0f766e) ![Checklist](https://img.shields.io/badge/checklist-13%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-WPF%20demo%20ready-0f766e) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
+![Status](https://img.shields.io/badge/status-wpf%20desktop%20v0.2%20tested-0f766e) ![Checklist](https://img.shields.io/badge/checklist-13%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-WPF%20demo%20ready-0f766e) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
 
@@ -33,7 +33,7 @@
 | Simulator perangkat | 0/5 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
 | Visi komputer & pilot | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Fase lanjutan |
 
-**Interpretasi:** 13 dari 32 checklist selesai (41% checklist, bukan kesiapan produksi). **WPF GUI dibangun dan paket Windows dihasilkan; tes POS Core dan editor katalog lulus Windows/Linux.** Interaksi mouse, fokus, dan pembaca layar belum diuji langsung. **0 SKU toko terverifikasi**; kamera AI dan alat ukur fisik belum terpasang.
+**Interpretasi:** 13 dari 32 checklist selesai (41% checklist, bukan kesiapan produksi). **WPF GUI, riwayat transaksi dan backup SQLite berhasil dibangun; tes POS Core, katalog dan keselamatan database lulus Windows/Linux.** Aktivasi hasil restore, kontrol akses dan interaksi UI fisik belum diuji/diimplementasikan sepenuhnya. **0 SKU toko terverifikasi**.
 
 ## Alur pekerjaan
 
@@ -77,11 +77,12 @@ Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). 
 
 ## Aplikasi Windows yang sudah tersedia
 
-- **WPF Desktop:** daftar produk, pencarian SKU/nama/barcode/alias, keranjang, checkout tunai dan pesan status.
+- **WPF Desktop:** pencarian, keranjang, checkout tunai, histori penjualan dan rincian receipt snapshot.
 - **Editor produk:** tambah SKU, harga baru dan koreksi stok berserta alasan. Pengelolaan metadata lengkap, hapus/nonaktif SKU dan hak akses masih backlog.
 - **Database terpisah:** `%LOCALAPPDATA%\\SmartCasier\\pos.db` dan `demo-pos.db` khusus simulasi.
-- **Distribusi:** paket `smart-casier-windows-demo` di [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions/runs/44280002437); butuh .NET 10 Desktop Runtime (x64).
-- **Bukti:** build WPF dan rangkaian pengujian POS/katalog lulus Windows & Linux; belum ada GUI automation atau tes pengguna langsung.
+- **Distribusi:** paket `smart-casier-windows-demo` di [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781); butuh .NET 10 Desktop Runtime (x64).
+- **Backup/restore aman:** backup online WAL yang diverifikasi, restore hanya ke file BARU; database aktif tidak ditimpa. Tidak terenkripsi dan belum ada autentikasi admin.
+- **Bukti:** build WPF serta tes POS/katalog/history/backup lulus Windows & Linux; belum ada GUI automation, tes pengguna, atau pemulihan database aktif end-to-end.
 
 ## Software POS yang sudah tersedia
 
@@ -89,7 +90,7 @@ Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). 
 - **Pencarian:** SKU, nama, label varian, barcode dan alias; stok habis/menipis dari ledger.
 - **CLI demo tanpa hardware:** `init`, `seed-demo`, `search`, `stock`, `checkout`.
 - **Verifikasi:** 13 skenario integrasi POS, build/test di Windows dan Linux [CI sukses](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
-- **Belum:** CRUD lengkap, back-up/restore, perangkat virtual dan fisik, histori penjualan di GUI, otorisasi admin, pemrosesan pulsa, dan data toko real.
+- **Belum:** CRUD lengkap, backup terjadwal dan terenkripsi, aktivasi database hasil restore, perangkat virtual/fisik, otorisasi admin, pemrosesan pulsa, dan data toko real.
 
 ## Tugas langsung berikutnya
 
