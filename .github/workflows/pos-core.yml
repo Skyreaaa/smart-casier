@@ -5,6 +5,7 @@ on:
       - 'src/**'
       - 'tests/SmartCasier.Core.SelfTests/**'
       - 'tests/SmartCasier.Catalog.SelfTests/**'
+      - 'tests/SmartCasier.Safety.SelfTests/**'
       - 'database/migrations/001_core.sql'
       - 'database/migrations/003_pos_sales.sql'
       - '.github/workflows/pos-core.yml'
@@ -25,6 +26,8 @@ jobs:
         run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
       - name: Verify catalog editor invariants
         run: dotnet run --project tests/SmartCasier.Catalog.SelfTests/SmartCasier.Catalog.SelfTests.csproj --configuration Release
+      - name: Verify WAL-safe backup and sale history
+        run: dotnet run --project tests/SmartCasier.Safety.SelfTests/SmartCasier.Safety.SelfTests.csproj --configuration Release
       - name: Smoke-test demo CLI
         shell: bash
         run: |
@@ -46,6 +49,8 @@ jobs:
         run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
       - name: Run catalog editor tests on Windows
         run: dotnet run --project tests/SmartCasier.Catalog.SelfTests/SmartCasier.Catalog.SelfTests.csproj --configuration Release
+      - name: Run backup/recovery and history tests on Windows
+        run: dotnet run --project tests/SmartCasier.Safety.SelfTests/SmartCasier.Safety.SelfTests.csproj --configuration Release
       - name: Publish portable Windows folder (framework-dependent)
         run: dotnet publish src/SmartCasier.Desktop/SmartCasier.Desktop.csproj --configuration Release --runtime win-x64 --self-contained false --output out/windows-desktop
       - name: Upload Windows demo artifact
