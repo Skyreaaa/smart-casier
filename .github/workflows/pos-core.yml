@@ -10,6 +10,7 @@ on:
       - 'database/migrations/001_core.sql'
       - 'database/migrations/003_pos_sales.sql'
       - 'database/migrations/004_local_auth.sql'
+      - 'database/migrations/005_sales_operator.sql'
       - '.github/workflows/pos-core.yml'
   pull_request:
 jobs:
