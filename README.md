@@ -1,14 +1,14 @@
 # Smart Casier
 
-**Aplikasi Windows:** [Panduan WPF](docs/WINDOWS_DESKTOP_V0_1.md) · [Login Admin/Kasir v0.3](docs/LOCAL_AUTH_V0_3.md) · [Riwayat dan backup/restore](docs/SALES_HISTORY_AND_BACKUP.md) · [CI terbaru Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615)
+**Aplikasi Windows:** [Simulator v0.4](docs/VIRTUAL_DEVICE_PROTOCOL_V0_4.md) · [Panduan WPF](docs/WINDOWS_DESKTOP_V0_1.md) · [Login Admin/Kasir v0.3](docs/LOCAL_AUTH_V0_3.md) · [Riwayat dan backup/restore](docs/SALES_HISTORY_AND_BACKUP.md) · [CI terbaru Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358)
 
 **Execution policy (18 Nov 2026):** [SOFTWARE ONLY — tugas fisik ditunda dan dicatat](docs/EXECUTION_POLICY_SOFTWARE_ONLY.md). Pengujian/pendataan fisik **bukan prasyarat implementasi software**; wajib sebelum deploy toko/komersial.
 
-> **Status: Software-Only Windows Desktop v0.3 (Admin/Kasir) + Database Foundation + Non-food Staging** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata dari sumber luar tetap ditahan untuk review hak pakai; 0 SKU toko nyata diverifikasi dan 0 kandidat eksternal masuk master POS.**
+> **Status: Software-Only Windows Desktop v0.4 (Operator + Simulator) + Database Foundation + Non-food Staging** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata dari sumber luar tetap ditahan untuk review hak pakai; 0 SKU toko nyata diverifikasi dan 0 kandidat eksternal masuk master POS.**
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
-![Status](https://img.shields.io/badge/status-wpf%20desktop%20v0.3%20tested-0f766e) ![Checklist](https://img.shields.io/badge/checklist-13%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-WPF%20demo%20ready-0f766e) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
+![Status](https://img.shields.io/badge/status-wpf%20desktop%20v0.4%20tested-0f766e) ![Checklist](https://img.shields.io/badge/checklist-16%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-WPF%20demo%20ready-0f766e) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
 
@@ -30,10 +30,10 @@
 | Repository & dokumentasi | 2/4 | ▰▰▰▰▰▱▱▱▱▱ 50% | Aktif |
 | Fondasi database | 5/6 | ▰▰▰▰▰▰▰▰▱▱ 83% | Skema + importer + CI siap; butuh 30 SKU nyata |
 | POS & inventaris | 2/6 | ▰▰▰▱▱▱▱▱▱▱ 33% | Variasi pcs/meter + keranjang/checkout dasar diuji; CRUD penuh masih parsial |
-| Simulator perangkat | 0/5 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
+| Simulator perangkat | 3/5 | ▰▰▰▰▰▰▱▱▱▱ 60% | Mock scanner/encoder + kontrak diuji; fisik belum |
 | Visi komputer & pilot | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Fase lanjutan |
 
-**Interpretasi:** 13 dari 32 checklist selesai (41% checklist, bukan kesiapan produksi). **WPF, login lokal Admin/Kasir dan pengamanan fungsi edit/backup di Core berhasil dibangun; 53 tes/OS lulus.** Akses langsung SQLite, perintah CLI demo dan API transaksi tertentu belum sepenuhnya berada di bawah kebijakan akun. GUI interaktif belum diuji. **0 SKU toko terverifikasi**.
+**Interpretasi:** 16 dari 32 checklist selesai (50% checklist, bukan kesiapan produksi). **Checkout dan akses histori/struk sekarang membutuhkan operator aktif di Core. Scanner dan encoder virtual memakai event unik dengan ACK/retry; 71 tes/OS lulus.** UX WPF belum diuji langsung, disconnect/timeout dan perangkat fisik belum diuji. **0 SKU toko terverifikasi.**
 
 ## Alur pekerjaan
 
@@ -77,21 +77,21 @@ Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). 
 
 ## Aplikasi Windows yang sudah tersedia
 
-- **WPF Desktop:** login operator, pencarian, keranjang, checkout tunai, histori penjualan dan receipt snapshot.
+- **WPF Desktop:** login operator, katalog/keranjang/checkout, histori receipt dan simulator input barcode/encoder virtual.
 - **Otorisasi lokal:** Admin pertama dibuat sendiri, tanpa password bawaan; Admin dapat membuat akun Kasir. Fungsi edit katalog dan backup/restore memeriksa sesi Admin di Core, bukan sekadar tombol.
 - **Editor produk:** tambah SKU, harga baru dan koreksi stok berserta alasan. Pengelolaan metadata lengkap, hapus/nonaktif SKU dan hak akses masih backlog.
 - **Database terpisah:** `%LOCALAPPDATA%\\SmartCasier\\pos.db` dan `demo-pos.db` khusus simulasi.
-- **Distribusi:** paket `smart-casier-windows-demo` di [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615); butuh .NET 10 Desktop Runtime (x64).
-- **Backup/restore aman:** backup online WAL yang diverifikasi, restore hanya ke file BARU; database aktif tidak ditimpa. Tidak terenkripsi dan belum ada autentikasi admin.
-- **Bukti:** build WPF dan **53 tes per platform** (POS/katalog/history/backup/role) lulus Windows & Linux; dependensi SQLite diperbarui untuk menghilangkan NU1903. Belum ada GUI automation, tes pengguna, atau pemulihan aktif end-to-end.
+- **Distribusi:** paket `smart-casier-windows-demo` di [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358); butuh .NET 10 Desktop Runtime (x64).
+- **Backup/restore aman:** backup online WAL yang diverifikasi, restore hanya ke file BARU; database aktif tidak ditimpa. Memerlukan Admin tetapi file backup belum terenkripsi.
+- **Bukti:** build WPF dan **71 tes per platform** (POS/katalog/history/backup/auth/device) lulus Windows & Linux. Belum ada GUI automation, tes pengguna, atau pemulihan aktif end-to-end.
 
 ## Software POS yang sudah tersedia
 
 - **.NET 10 + SQLite:** checkout fisik atomik, item PCS/meter, receipt snapshot, uang kembalian dan idempotensi request.
 - **Pencarian:** SKU, nama, label varian, barcode dan alias; stok habis/menipis dari ledger.
-- **CLI demo tanpa hardware:** `init`, `seed-demo`, `search`, `stock`, `checkout`.
+- **CLI demo tanpa hardware:** `init`, `seed-demo`, `search`, `stock`. Checkout CLI sekarang dinonaktifkan karena transaksi memerlukan login WPF.
 - **Verifikasi:** 13 skenario integrasi POS, build/test di Windows dan Linux [CI sukses](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
-- **Belum:** CRUD lengkap, backup terjadwal/terenkripsi, aktivasi DB hasil restore, perangkat virtual/fisik, hardening akses file SQLite, penegakan autentikasi pada semua API Core, reset password/admin recovery, pemrosesan pulsa, dan data toko real.
+- **Belum:** CRUD lengkap, backup terjadwal/terenkripsi, aktivasi restore, perangkat fisik, simulasi disconnect/timeout, hardening akses file SQLite, autentikasi pada seluruh API baca, reset password, pemrosesan pulsa dan data toko nyata.
 
 ## Tugas langsung berikutnya
 

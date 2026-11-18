@@ -1,5 +1,15 @@
 # Catatan Progres
 
+## 2026-11-18 — v0.4: Sesi operator dan scanner/encoder virtual
+
+- Migrasi SQLite v5 mencatat operator pada penjualan baru, dan v6 menyimpan event scanner/panjang terpisah.
+- Checkout, pembacaan struk serta histori memerlukan sesi operator aktif pada Core. Checkout CLI dinonaktifkan.
+- Scanner dan encoder virtual memiliki event ID unik, retry idempoten dan ACK/REJECT manual; ACK mengusulkan item keranjang, bukan penjualan.
+- [71 pengujian per OS dan build WPF lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358); paket Windows diterbitkan sebagai artifact.
+- Progres naik menjadi **16/32 (50%)** karena SC-DEV-01/02/03, hanya kriteria software; hardware fisik tetap ditunda.
+- Belum ada selector varian lengkap, simulasi disconnect/timeout, tes interaktif UI maupun sertifikasi ukuran.
+
+
 ## 2026-11-18 — Windows WPF v0.3: login lokal Admin/Kasir
 
 - Skema POS **v4** menambah akun Admin/Kasir dan audit autentikasi; data stok/penjualan sebelumnya tidak dihapus.

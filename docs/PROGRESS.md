@@ -7,10 +7,10 @@
 
 ## Ringkasan terverifikasi
 
-- **13/32 checklist selesai (41%):** termasuk dasar database dan 2 acceptance criteria POS. Angka bukan kesiapan produksi.
-- **WPF login lokal Admin/Kasir dan pemeriksaan akses Admin di Core tersedia.** [Build dan 53 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615). Restore tetap non-destruktif; GUI klik/aksesibilitas dan database/OS hardening belum diuji.
+- **16/32 checklist selesai (50%):** termasuk dasar database dan 2 acceptance criteria POS. Angka bukan kesiapan produksi.
+- **WPF login lokal dan sesi operator wajib pada transaksi/struk tersedia.** [71 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358), termasuk scanner dan encoder virtual dengan ACK/retry. Interaksi GUI, disconnect, dan perangkat fisik belum diuji.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
-- **Tugas aktif berikutnya:** hardening autentikasi seluruh operasi Core dan histori audit mutasi per operator, lalu simulator barcode/encoder; aktivasi restore terkontrol dan backup terjadwal tetap backlog. Validasi fisik tetap DEFERRED_ON_SITE.
+- **Tugas aktif berikutnya:** selector material/warna, simulasi disconnect/timeout, audit perubahan harga/stok per operator, UI automation, dan recovery operasional. Validasi fisik tetap DEFERRED_ON_SITE.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
 
 ![Dashboard](assets/progress-dashboard.svg)
@@ -52,13 +52,13 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [ ] **SC-POS-05** — Checkout, pembayaran, struk dan riwayat (UI histori + receipt tersimpan; cetak/ekspor struk dan UAT belum selesai)
 - [ ] **SC-POS-06** — Backup/restore dan penanganan gangguan (online backup + restore ke FILE BARU lulus CI; aktivasi, disaster recovery dan jadwal otomatis belum)
 
-### 5. Simulator perangkat — 0/5
+### 5. Simulator perangkat — 3/5 (software saja)
 
-- [ ] **SC-DEV-01** — Kontrak adapter hardware
-- [ ] **SC-DEV-02** — Simulasi barcode scanner
-- [ ] **SC-DEV-03** — Simulasi encoder/display panjang
-- [ ] **SC-DEV-04** — Draft pengukuran + pilih material/warna
-- [ ] **SC-DEV-05** — Uji error/disconnect dan mode manual
+- [x] **SC-DEV-01** — Kontrak input virtual: IBarcodeReader / ILengthMeter, DeviceFrame dan inbox
+- [x] **SC-DEV-02** — Scanner barcode virtual + ACK/retry dan tes lintas platform
+- [x] **SC-DEV-03** — Encoder serta tampilan panjang VIRTUAL dalam WPF dan tes
+- [ ] **SC-DEV-04** — Draft pengukuran + pilih material/warna (input SKU manual ada; selector varian belum)
+- [ ] **SC-DEV-05** — Uji error/disconnect dan mode manual (deduplikasi retry diuji, disconnect belum)
 
 ### 6. Visi komputer & pilot — 0/6
 
@@ -73,16 +73,25 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 
 - Semua bukti cek alat, SKU asli, observasi toko, akurasi dan legal metrologi dicatat `DEFERRED_ON_SITE` dalam [execution policy](EXECUTION_POLICY_SOFTWARE_ONLY.md).
 - Fase implementasi POS **diizinkan dimulai sekarang** memakai database dan data sintetis; bukan menunggu validasi fisik.
-- Dasbor 13/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
+- Dasbor 16/32 merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
+
+## Bukti operator transaksi dan simulator v0.4 (software)
+
+- [x] Migrasi [operator penjualan v5](../database/migrations/005_sales_operator.sql); transaksi baru punya `operator_id`, riwayat lama tidak diubah.
+- [x] Checkout/riwayat/struk di Core memerlukan sesi operator valid, checkout CLI tanpa login dinonaktifkan.
+- [x] Skema [device inbox v6](../database/migrations/006_device_inbox.sql) untuk event PENDING/ACKED/REJECTED, deduplikasi event UUID dan ACK.
+- [x] [Dialog WPF](../src/SmartCasier.Desktop/DeviceSimulatorDialog.xaml) scanner/panjang virtual; ACK mengusulkan item ke keranjang, **tidak langsung mencatat penjualan**.
+- [x] [14 tes device](../tests/SmartCasier.Device.SelfTests/Program.cs), total **71 tes per OS** di [CI Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358).
+- [ ] Selector varian/material, simulasi disconnect/timeout, UI automation dan koneksi hardware nyata.
 
 ## Bukti login Admin/Kasir v0.3 (software)
 
 - [x] Migrasi [akun lokal v4](../database/migrations/004_local_auth.sql): Admin, Kasir, PBKDF2-SHA256 + salt, lockout login, audit autentikasi.
 - [x] [Dialog WPF](../src/SmartCasier.Desktop/LoginDialog.xaml) login dan first-run Admin **tanpa default password**; [pembuatan Kasir](../src/SmartCasier.Desktop/CreateCashierDialog.xaml); [service otorisasi](../src/SmartCasier.Core/AuthService.cs).
 - [x] Hak Admin wajib pada operasi edit SKU/harga/stok dan backup/restore, termasuk pemeriksaan dari service Core; tidak hanya tombol dinonaktifkan.
-- [x] [14 tes keamanan](../tests/SmartCasier.Auth.SelfTests/Program.cs), total [53 tes per OS (Windows/Linux CI lulus)](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615).
+- [x] [18 tes keamanan](../tests/SmartCasier.Auth.SelfTests/Program.cs), total [71 tes per OS (Windows/Linux CI lulus)](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358).
 - [x] Dependensi SQLite diperbarui ke `Microsoft.Data.Sqlite 10.0.13`; log CI tidak lagi memunculkan peringatan keamanan `NU1903`.
-- [ ] Hak akses **seluruh API** transaksi/read-only, audit user per perubahan data, password reset/rotasi, penguncian OS/file database, uji klik GUI dan threat-model.
+- [ ] Audit user per perubahan harga/stok, autentikasi API baca katalog, password reset/rotasi, penguncian file DB tingkat OS, uji klik GUI dan threat-model.
 - [ ] Tidak ada klaim production-ready; lihat [batas keamanan login](LOCAL_AUTH_V0_3.md).
 
 ## Bukti software POS Core + Windows WPF GUI
@@ -96,7 +105,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [ ] CRUD metadata lengkap, aktivasi restore, backup terjadwal/enkripsi, laporan lengkap, refund, payment selain tunai, role/permissions, dan tes klik GUI.
 - [ ] Hardware adapter dan verifikasi fisik tetap DEFERRED_ON_SITE sesuai policy.
 
-**Checklist utama 13/32** tetap: peningkatan role tidak otomatis menyelesaikan seluruh CRUD, checkout cetak struk atau disaster recovery. Tes WPF interaktif/keamanan file dan seluruh bukti on-site masih terbuka.
+**Checklist utama 16/32**: 3 kriteria simulator software telah diuji. Checkout cetak struk, CRUD penuh, disconnect/timeout, recovery, tes WPF interaktif, dan bukti on-site tetap terbuka.
 
 ## Gate dan definisi selesai
 
@@ -104,7 +113,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 | --- | --- | --- |
 | G0 — Scope | Kebutuhan disetujui, data sampel toko mewakili jenis SKU & satuan | Belum lulus (observasi toko belum ada) |
 | G1 — Database | Migrasi SQLite + test integritas + import/rollback valid | Baseline teknis lulus CI; belum lulus validasi 30 SKU nyata |
-| G2 — POS | Transaksi offline, stok konsisten, backup/restore teruji | Belum dimulai |
+| G2 — POS | Transaksi offline, stok konsisten, backup/restore teruji | Core/CI lulus; pemulihan aktif dan UAT UI belum (gate belum lulus) |
 | G3 — Alat ukur | Panjang aktual dibanding referensi pada variasi material; error handling | Belum dimulai |
 | G4 — Commercial | Kewajiban metrologi legal dikonfirmasi; perangkat dinyatakan layak sesuai ketentuan | Belum diperiksa |
 | G5 — AI | Evaluasi identifikasi SKU, rejection ambiguous, latency pada PC target | Belum dimulai |
