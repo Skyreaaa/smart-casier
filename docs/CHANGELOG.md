@@ -1,5 +1,14 @@
 # Catatan Progres
 
+## 2026-11-18 — Audit dataset dan adapter nyata (belum ada impor riil)
+
+- Audit 5 sumber non-makanan: Mendeley bengkel (CC BY + PII), Open Products Facts (ODbL), Zenodo e-Katalog (rights tidak jelas), dua sumber GitHub (lisensi belum jelas).
+- Adapter Open Products Facts untuk CSV/TSV atau .gz lokal; hanya tag Indonesia eksplisit dan kelas non-food; menolak barcode invalid.
+- Adapter spare part mengekstrak hanya kolom master barang; membuang seluruh informasi pelanggan, transaksi, dan harga sumber.
+- CI otomatis diperluas; kedua adapter tidak mengisi stok/harga master POS.
+- Sumber disetujui untuk data nyata **0**, SKU asli **0**, progres utama tetap **11/32**.
+
+
 ## 2026-11-18 — Staging dataset non-makanan
 
 - Dataset makanan/minuman dikeluarkan dari scope Smart Casier.

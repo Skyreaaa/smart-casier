@@ -22,6 +22,13 @@ Kategori allowlist internal yang diterima: `SPARE_PARTS`, `FASTENERS`, `PLUMBING
 
 **PENDING** berarti hanya tercatat sebagai kandidat, bukan sudah diunduh, disetujui, atau layak masuk database POS. Sebelum status suatu sumber diubah ke `APPROVED`, perlu memeriksa hak pakai, privasi, relevansi, serta provenance. **Tidak ada scraping atau panggilan API otomatis.**
 
+## Dua adapter sumber yang sudah tersedia
+
+- [Open Products Facts](../tools/prepare_opf.py): menerima export CSV/TSV atau .gz lokal, hanya kategori non-food dengan tag negara Indonesia eksplisit; membuang harga dan kolom privat yang tidak terkait.
+- [Master spare part bengkel](../tools/prepare_spareparts.py): menerima **CSV part master** hasil ekspor sah, dengan nama kolom ditentukan manual; hanya mengambil identitas, uraian, grup, dan brand. Data pelanggan/transaksi **tidak ikut disalin**.
+
+Panduan perintah dan keterbatasan: [NONFOOD_INTAKE.md](NONFOOD_INTAKE.md); status sumber: [SOURCE_AUDIT_2026-11-18.md](SOURCE_AUDIT_2026-11-18.md).
+
 ## Arsitektur dataset
 
 ```mermaid

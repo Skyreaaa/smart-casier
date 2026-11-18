@@ -87,12 +87,14 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 
 - [x] Filter kategori non-makanan dan guard tambahan untuk indikasi makanan yang salah kategori.
 - [x] Prototipe staging SQLite, registry sumber, validasi GTIN, deduplikasi, dan larangan memasukkan data langsung ke POS.
+- [x] Adapter lokal Open Products Facts (hanya non-food bertag Indonesia) dan spare part (hanya kolom master, tanpa data pelanggan/transaksi).
 - [x] Persetujuan record dan sumber dengan jejak audit, termasuk penahanan kembali ketika sumber ditolak.
 - [x] Tes CI otomatis: [GitHub Actions](https://github.com/Skyreaaa/smart-casier/actions) — cek run terakhir untuk jumlah tes dan kesimpulan aktual.
 - [ ] Lisensi/privasi sumber eksternal ditinjau dan disetujui untuk ekstraksi data nyata.
+- [ ] Berkas sumber dataset non-makanan asli diperoleh secara sah dan dijalankan melalui adapter serta staging; saat ini **0 hasil nyata**.
 - [ ] Setidaknya 30 SKU toko nyata diverifikasi.
 
-Empat referensi dataset Indonesia tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
+Lima sumber eksternal (termasuk Open Products Facts berskala global, hanya diambil subset bertag Indonesia) tercantum dalam [registry](../data/sources/nonfood_registry.json) dengan status `PENDING`. Satu fixture sintetis internal berstatus `APPROVED` **hanya untuk pengujian**, bukan izin penggunaan data nyata. **Progres global tetap 11/32**: staging merupakan pekerjaan pendukung, tidak menggantikan tugas validasi 30 SKU asli.
 
 ## Prioritas pengumpulan data
 

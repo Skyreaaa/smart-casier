@@ -1,12 +1,14 @@
 # Smart Casier
 
-> **Status: Database Foundation + Non-food Staging v0.1** — skema SQLite, importer CSV, filter non-makanan, dan pengujian otomatis tersedia. **Belum ada katalog produk Indonesia yang disetujui**, data toko nyata, aplikasi POS, hardware, atau AI.
+> **Status: Database Foundation + Non-food Staging v0.2** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **Belum ada produk nyata yang diimpor atau disetujui ke POS**.
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
 ![Status](https://img.shields.io/badge/status-nonfood%20staging-2563eb) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
+
+**Sumber non-makanan:** [Audit lisensi dan relevansi](docs/SOURCE_AUDIT_2026-11-18.md) · [Panduan dua adapter](docs/NONFOOD_INTAKE.md)
 
 **Dataset non-makanan:** [Pipeline staging](docs/DATASET_STAGING.md) · [Sumber kandidat](data/sources/nonfood_registry.json) · [Contoh sintetis](data/examples/nonfood_staging_demo.csv) · [Staging schema](database/migrations/002_dataset_staging.sql)
 
@@ -59,12 +61,12 @@ flowchart LR
 | --- | --- |
 | Scope | Spare part, baut, perkakas, pipa, material lembaran, listrik, pulsa |
 | Makanan/minuman | **Tidak termasuk**; record out-of-scope dikarantina |
-| Sumber eksternal kandidat | 4; seluruhnya **PENDING** persetujuan penggunaan |
+| Sumber eksternal kandidat | 5; seluruhnya **PENDING** persetujuan penggunaan |
 | Data eksternal yang masuk master POS | **0 SKU** |
-| Pipeline SQLite | Siap diuji; tidak menyentuh transaksi dan stok |
+| Pipeline SQLite | Staging + 2 adapter tersedia; tidak menyentuh transaksi dan stok |
 | Quality gates | Barcode, duplikat, sumber/lisensi, reviewer, audit |
 
-Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). Dataset sintetis untuk CI **bukan** katalog toko nyata.
+Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). [Audit sumber](docs/SOURCE_AUDIT_2026-11-18.md) menjelaskan izin dan keterbatasan. Dataset sintetis untuk CI **bukan** katalog toko nyata.
 
 ## Tugas langsung berikutnya
 

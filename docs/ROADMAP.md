@@ -2,6 +2,8 @@
 
 > Durasi estimasi untuk tim kecil; **bukan tanggal rilis yang sudah dijanjikan**. Hardware/ML mengikuti validasi tahap sebelumnya.
 
+**Update 18 November 2026:** Adapter [Open Products Facts + master spare part](NONFOOD_INTAKE.md) tersedia dan [audit sumber](SOURCE_AUDIT_2026-11-18.md) dicatat. Data nyata terverifikasi tetap 0 SKU.
+
 **Update 18 November 2026:** Pipeline [staging dataset non-makanan](DATASET_STAGING.md) juga telah dibuat dengan registry asal data, validasi barcode, filter non-food, review lisensi dan audit. Dataset eksternal yang disetujui dan data stok toko masih **nol**.
 
 **Update 18 November 2026:** Database Foundation v0.1 sudah tersedia: [skema SQL](../database/migrations/001_core.sql), [template CSV](../data/templates/catalog_products.csv), [panduan](DATABASE_FOUNDATION.md) dan 11 tes CI lulus. **Pending:** 30 SKU toko nyata. Fase POS belum dimulai.
