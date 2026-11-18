@@ -1,8 +1,10 @@
-# Smart Casier — Windows Desktop v0.1
+# Smart Casier — Windows Desktop v0.1 (arsip + petunjuk menjalankan)
+
+> **Pembaruan v0.4:** tersedia [operator wajib checkout dan simulator barcode/encoder virtual](VIRTUAL_DEVICE_PROTOCOL_V0_4.md), [build Windows dan 71 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358).
 
 **Mode:** SOFTWARE_ONLY — **bukan aplikasi siap dipakai sebagai kasir komersial**.  
 **Teknologi:** WPF, C#/.NET 10, SQLite WAL, offline, satu PC Windows.  
-**Status bukti:** [Build Windows + Linux dan 53 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
+**Status bukti:** [Build Windows + Linux dan 53 tes per OS lulus](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358). **Belum ada pengujian interaksi/visual langsung pada Windows desktop.**
 
 ## Dapat dijalankan dari GitHub Actions
 

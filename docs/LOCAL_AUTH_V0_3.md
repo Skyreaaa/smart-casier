@@ -1,4 +1,6 @@
-# Smart Casier — Login Lokal dan Role Admin/Kasir v0.3
+# Smart Casier — Login Lokal dan Role Admin/Kasir v0.3 (arsip)
+
+> **Pembaruan v0.4:** [Checkout dan receipt sekarang wajib sesi operator, event barcode/encoder virtual tersedia](VIRTUAL_DEVICE_PROTOCOL_V0_4.md). CLI checkout dinonaktifkan.
 
 **Status:** Software-only demo/preview. [CI Windows dan Linux lulus: 53 tes per platform](https://github.com/Skyreaaa/smart-casier/actions/runs/44285643615). Progres utama tetap 13/32. Semua pemeriksaan toko/hardware masih [DEFERRED_ON_SITE](EXECUTION_POLICY_SOFTWARE_ONLY.md).
 
@@ -31,7 +33,7 @@
 - Password disimpan sebagai hash `PBKDF2-HMAC-SHA256`, salt acak 32 byte, 310.000 iterasi. Tidak ada password hardcoded atau plaintext di database.
 - Lima login gagal mengunci akun sementara 15 menit. Sesi Admin diperiksa terhadap batas 8 jam **saat mengakses operasi sensitif**. UI menghapus referensi sesi ketika operator diganti atau aplikasi ditutup, tetapi **kedaluwarsa sesi belum ditegakkan pada seluruh jalur checkout/histori** dan harus dilengkapi sebelum operasional.
 - Audit keamanan saat ini mencakup bootstrap Admin, login sukses/gagal dan pembuatan Kasir. **Identitas admin yang mengubah harga/stok belum diikat ke ledger perubahan; ini masih backlog.**
-- **Batas keamanan penting:** file SQLite belum terenkripsi atau dilindungi ACL khusus; orang dengan hak tulis file pada Windows tetap dapat memodifikasi database langsung. Sebagian API baca dan checkout pada Core/CLI masih memiliki jalur tanpa token yang diperiksa Core. Pembatasan `checkout` CLI hanya untuk database bernama `demo` adalah guard penggunaan, **bukan batas keamanan yang kuat**.
+- **Batas keamanan penting:** file SQLite belum terenkripsi atau dilindungi ACL khusus; orang dengan hak tulis file pada Windows tetap dapat memodifikasi database langsung. Sebagian API baca dan checkout pada Core/CLI masih memiliki jalur tanpa token yang diperiksa Core. Pembatasan checkout CLI telah diganti dengan penonaktifan perintah. Ini bukan batas keamanan untuk akses langsung file SQLite, **bukan batas keamanan yang kuat**.
 - Backup mencakup data akun dan hash password; **tidak terenkripsi**. Simpan di folder terbatas dan jangan bagikan ke pihak lain.
 - Belum tersedia reset/rotasi password Admin, manajemen nonaktif user di GUI, autentikasi multi-PC, pengujian aksesibilitas dengan screen reader, atau uji penembusan. Tidak boleh diklaim production-ready.
 

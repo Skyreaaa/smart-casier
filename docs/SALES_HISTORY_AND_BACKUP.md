@@ -1,4 +1,6 @@
-# Smart Casier — Riwayat Transaksi & Backup/Restore SQLite (Software Sprint v0.2)
+# Smart Casier — Riwayat Transaksi & Backup/Restore SQLite (Software Sprint v0.2; arsip)
+
+> **Pembaruan:** database operasional kini versi **v6**, dan backup validasi menerima skema historis yang didukung. [Bukti CI terbaru](https://github.com/Skyreaaa/smart-casier/actions/runs/44291496358) dan [panduan virtual device](VIRTUAL_DEVICE_PROTOCOL_V0_4.md).
 
 **Mode:** SOFTWARE_ONLY · WPF Windows, .NET 10, SQLite offline.  
 **Bukti CI:** [Windows + Linux, build/tes berhasil](https://github.com/Skyreaaa/smart-casier/actions/runs/44282401781). **Tidak ada klaim pengujian klik/fokus GUI langsung.**

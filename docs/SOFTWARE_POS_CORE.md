@@ -1,4 +1,6 @@
-# Smart Casier — Software POS Core v0.1
+# Smart Casier — Software POS Core v0.1 (arsip)
+
+> **Dokumen historis v0.1.** Versi terbaru: [operator + simulator v0.4](VIRTUAL_DEVICE_PROTOCOL_V0_4.md). CLI checkout tanpa login **telah dinonaktifkan**. Gunakan GUI WPF dengan akun operator.
 
 **Mode:** SOFTWARE_ONLY, tanpa alat fisik dan tanpa data toko riil.  
 **Platform:** .NET 10 (C#) + SQLite (offline), CLI lintas platform; antarmuka Windows grafis belum dibuat.  
@@ -25,10 +27,9 @@ dotnet run --project src/SmartCasier.Cli -- init --db data/private/demo-pos.db
 dotnet run --project src/SmartCasier.Cli -- seed-demo --db data/private/demo-pos.db --confirm-synthetic
 dotnet run --project src/SmartCasier.Cli -- search --db data/private/demo-pos.db --query "baut"
 dotnet run --project src/SmartCasier.Cli -- stock --db data/private/demo-pos.db
-dotnet run --project src/SmartCasier.Cli -- checkout --db data/private/demo-pos.db --sku BAUT-M8X30 --qty 1 --paid 5000
 ```
 
-Untuk memeriksa idempotensi, jalankan lagi command checkout dengan **`--request-id`** yang sama seperti output pertama (dan sku/qty/paid sama). Harus kembali `ALREADY_PROCESSED=True` tanpa mutasi stok kedua. Jangan menggunakan DB demo untuk toko nyata.
+Replay dan idempotensi checkout kini diuji oleh suite POS Core otomatis dengan sesi operator aktif, bukan lewat CLI tanpa login.
 
 Baris meteran memakai `--qty 2.5` (2,5 meter) dan SKU `KMY-MERAH`. Harga di mata uang rupiah integer; panjang/stok disimpan milli-unit (1 meter = 1000, 1 pcs = 1000). Stok habis 0; menipis bila positif dan lebih kecil dari ambang per SKU (default 3 pcs).
 
@@ -41,8 +42,8 @@ flowchart TD
   SQL --> CATALOG[Katalog/variant/barcode/alias]
   SQL --> LEDGER[Stock ledger - append-only]
   SQL --> SALES[Sales + receipt snapshots]
-  SIM[Hardware simulator - backlog] -.-> CORE
-  WPF[Windows GUI - backlog] -.-> CORE
+  SIM[Virtual scanner/encoder v0.4] --> CORE
+  WPF[Windows WPF v0.4] --> CORE
   ON_SITE[DEFERRED_ON_SITE] -.-> WPF
 ```
 
@@ -52,7 +53,7 @@ Penjualan ber-ID request unik, dilakukan dalam satu transaksi SQLite. Replay req
 
 ## Belum diimplementasikan (jangan disamakan dengan selesai)
 
-- GUI WPF untuk kasir; input produk dan pengeditan inventaris (CRUD); laporan penjualan yang lengkap.
+- GUI WPF dasar, input SKU parsial dan histori sudah dibuat pada v0.4; CRUD lengkap dan laporan menyeluruh masih backlog.
 - Pembayaran selain uang tunai, pajak/diskon, retur/pembatalan, role admin/kasir, pengaturan toko, printer struk, backup/restore otomatis.
 - Produk DIGITAL/SERVICE seperti pulsa belum bisa checkout; butuh lifecycle fulfillment online dan error/retry yang jelas.
 - Seluruh hardware adapter/perangkat fisik, kamera AI, kalibrasi dan metrologi.
