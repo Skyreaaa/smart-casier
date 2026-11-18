@@ -105,6 +105,50 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex) { ShowError("Gagal memuat ulang: " + ex.Message); }
     }
 
+    private void NewSkuButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        var dialog = new NewSkuDialog { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.Result is null) return;
+        try
+        {
+            var sku = new ProductCatalogEditor(_database).Create(dialog.Result);
+            SearchBox.Text = sku;
+            ReloadProducts();
+            ShowInfo("SKU " + sku + " telah dibuat pada database lokal.");
+        }
+        catch (Exception ex)
+        {
+            ShowError("Produk gagal disimpan: " + ex.Message);
+        }
+    }
+
+    private void ManageSkuButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized || _database is null) return;
+        if (ProductGrid.SelectedItem is not ProductRow item)
+        {
+            ShowError("Pilih SKU terlebih dahulu untuk mengubah harga atau stok.");
+            return;
+        }
+        var dialog = new SkuEditDialog(item.Sku, item.UnitPriceIdr) { Owner = this };
+        if (dialog.ShowDialog() != true) return;
+        try
+        {
+            var editor = new ProductCatalogEditor(_database);
+            if (dialog.Operation == SkuEditDialog.EditKind.Price)
+                editor.UpdatePrice(item.Sku, dialog.Value);
+            else if (dialog.Operation == SkuEditDialog.EditKind.Adjustment)
+                editor.AdjustStock(item.Sku, dialog.Value, dialog.Reason);
+            ReloadProducts();
+            ShowInfo("Perubahan untuk " + item.Sku + " berhasil tersimpan.");
+        }
+        catch (Exception ex)
+        {
+            ShowError("Perubahan gagal: " + ex.Message);
+        }
+    }
+
     private void ProductGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         => AddSelectedProduct();
 

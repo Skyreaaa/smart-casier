@@ -64,15 +64,15 @@
                             <DataGridTextColumn Header="Status" Binding="{Binding StatusLabel}" Width="0.95*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Grid Grid.Row="6">
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Content="Tambah ke Keranjang" Style="{StaticResource PrimaryButton}"
+                    <StackPanel Grid.Row="6" Orientation="Horizontal">
+                        <Button Content="Tambah ke Keranjang" Style="{StaticResource PrimaryButton}"
                                 Click="AddButton_Click" AutomationProperties.Name="Tambahkan produk terpilih ke keranjang"/>
-                        <Button Grid.Column="1" Content="Muat Ulang" Click="RefreshButton_Click" />
-                        <TextBlock Grid.Column="2" Text="Klik dua kali untuk tambah cepat"
-                                   HorizontalAlignment="Right" VerticalAlignment="Center"
-                                   Foreground="{StaticResource MutedBrush}" FontSize="12"/>
-                    </Grid>
+                        <Button Content="SKU Baru" Click="NewSkuButton_Click"
+                                ToolTip="Tambahkan produk dan varian baru ke database lokal"/>
+                        <Button Content="Harga / Stok" Click="ManageSkuButton_Click"
+                                ToolTip="Ubah harga atau catat mutasi stok produk terpilih"/>
+                        <Button Content="Muat Ulang" Click="RefreshButton_Click" Margin="0"/>
+                    </StackPanel>
                 </Grid>
             </Border>
 
