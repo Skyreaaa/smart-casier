@@ -95,9 +95,9 @@ Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). 
 
 ## Tugas langsung berikutnya
 
-1. **Software:** lanjutkan fitur histori transaksi, backup/restore SQLite yang aman, dan akses admin sebelum pengujian UI.
-2. **Software:** lengkapi pengelolaan SKU (edit nama/varian, nonaktifkan, audit harga), inventaris dan penanganan error.
-3. **Software:** simulator scanner barcode dan perangkat ukur dengan antarmuka adapter yang bisa diganti.
+1. **Software:** lanjutkan tes interaktif WPF (klik, keyboard, fokus, navigasi dan aksesibilitas) untuk login → simulasi → keranjang → checkout.
+2. **Software:** tambahkan pemilih material/warna/varian yang eksplisit pada event meteran; tidak hanya mengetik SKU.
+3. **Software:** simulasi disconnect, timeout, retry/recovery, dan audit perubahan stok/harga oleh operator; lanjutkan aktivasi restore yang aman.
 4. **DEFERRED_ON_SITE:** 30 SKU asli, perangkat fisik, kalibrasi, uji toko dan metrologi tetap dicatat [di sini](docs/EXECUTION_POLICY_SOFTWARE_ONLY.md).
 
 > Dashboard dibuat sebagai laporan *manual snapshot*. Perbarui centang di `docs/PROGRESS.md` dan sinkronkan angka/diagram di README serta SVG saat pekerjaan benar-benar selesai; tidak ada klaim otomatisasi progres dari GitHub Actions.
