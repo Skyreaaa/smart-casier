@@ -15,8 +15,16 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Build POS core
-        run: dotnet build src/SmartCasier.Core/SmartCasier.Core.csproj --configuration Release
+      - name: Build POS core and CLI
+        run: dotnet build src/SmartCasier.Cli/SmartCasier.Cli.csproj --configuration Release
+      - name: Run software-only checkout tests
+        run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
+      - name: Check CLI demo on Linux
+        shell: bash
+        run: |
+          dotnet run --project src/SmartCasier.Cli -- init --db demo-pos.db
+          dotnet run --project src/SmartCasier.Cli -- seed-demo --db demo-pos.db --confirm-synthetic
+          dotnet run --project src/SmartCasier.Cli -- search --db demo-pos.db --query baut
   windows-core:
     runs-on: windows-latest
     steps:
@@ -24,5 +32,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Build POS core on Windows
-        run: dotnet build src/SmartCasier.Core/SmartCasier.Core.csproj --configuration Release
+      - name: Build POS core and CLI on Windows
+        run: dotnet build src/SmartCasier.Cli/SmartCasier.Cli.csproj --configuration Release
+      - name: Run offline checkout tests on Windows
+        run: dotnet run --project tests/SmartCasier.Core.SelfTests/SmartCasier.Core.SelfTests.csproj --configuration Release
