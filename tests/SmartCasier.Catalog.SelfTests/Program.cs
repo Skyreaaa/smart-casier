@@ -39,7 +39,7 @@ static NewSku Product(string sku="BOLT-M8X30",long initial=3000) =>
 
 Test("create SKU and opening stock",()=>Database(db=>
 {
-    var editor=new ProductCatalogEditor(db);
+    var editor=new TestEditor(db);
     editor.Create(Product());
     var item=new CatalogService(db).Search("BOLT-M8X30").Single();
     Assert(item.OnHandMilli==3000 && item.UnitPriceIdr==1200,"New SKU details wrong");
@@ -47,7 +47,7 @@ Test("create SKU and opening stock",()=>Database(db=>
 }));
 Test("duplicate SKU rollback does not duplicate opening stock",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     Throws<SqliteException>(()=>ed.Create(Product()));
     Assert(new CatalogService(db).Search("BOLT-M8X30")[0].OnHandMilli==3000,
@@ -55,20 +55,20 @@ Test("duplicate SKU rollback does not duplicate opening stock",()=>Database(db=>
 }));
 Test("new variant reuses product family and category",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     ed.Create(Product("BOLT-M8X35",2000) with { Barcode = "" });
     Assert(new CatalogService(db).Search("baut").Count==2,"Family search should return 2");
 }));
 Test("invalid fractional PCS rejected",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     Throws<ArgumentException>(()=>ed.Create(Product() with { OpeningMilli=1500 }));
     Assert(new CatalogService(db).Inventory().Count==0,"Partial product created");
 }));
 Test("meter SKU accepts fractional length",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(new("ROLL","Material gulungan","KMY","Kertas minyak",
         "KMY-HIJAU","Hijau","M",5000,2550,3000,""));
     var item=new CatalogService(db).Search("KMY-HIJAU").Single();
@@ -76,7 +76,7 @@ Test("meter SKU accepts fractional length",()=>Database(db=>
 }));
 Test("stock adjustment creates ledger entries",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     ed.AdjustStock("BOLT-M8X30",-1000,"Opname gudang");
     Assert(new CatalogService(db).Search("BOLT-M8X30")[0].OnHandMilli==2000,
@@ -84,7 +84,7 @@ Test("stock adjustment creates ledger entries",()=>Database(db=>
 }));
 Test("negative stock adjustment rejected",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     Throws<SqliteException>(()=>ed.AdjustStock("BOLT-M8X30",-4000,"Koreksi"));
     Assert(new CatalogService(db).Search("BOLT-M8X30")[0].OnHandMilli==3000,
@@ -92,7 +92,7 @@ Test("negative stock adjustment rejected",()=>Database(db=>
 }));
 Test("update price preserves sale snapshot",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     var id=Guid.NewGuid();
     new SalesService(db).Checkout(id,[new("BOLT-M8X30",1000)],5000);
@@ -104,21 +104,39 @@ Test("update price preserves sale snapshot",()=>Database(db=>
 }));
 Test("bad product key does not create records",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     Throws<ArgumentException>(()=>ed.Create(Product() with { Sku="../bad" }));
     Assert(new CatalogService(db).Inventory().Count==0,"Invalid SKU persisted");
 }));
 Test("reason is mandatory for adjustment",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     Throws<ArgumentException>(()=>ed.AdjustStock("BOLT-M8X30",1000," "));
 }));
 Test("no fractional inventory correction for PCS",()=>Database(db=>
 {
-    var ed=new ProductCatalogEditor(db);
+    var ed=new TestEditor(db);
     ed.Create(Product());
     Throws<ArgumentException>(()=>ed.AdjustStock("BOLT-M8X30",500,"Opname"));
 }));
 Console.WriteLine($"EDITOR TESTS: {passed} passed, {failed} failed");
 if(failed>0)Environment.ExitCode=1;
+
+sealed class TestEditor
+{
+    private readonly ProductCatalogEditor editor;
+    private readonly AuthSession admin;
+    public TestEditor(PosDatabase db)
+    {
+        var auth = new AuthService(db);
+        var secret = Guid.NewGuid().ToString("N") + "!Aa";
+        auth.CreateFirstAdmin("testoperator",secret);
+        admin = auth.Login("testoperator",secret);
+        editor = new ProductCatalogEditor(db);
+    }
+    public string Create(NewSku sku) => editor.Create(sku,admin);
+    public void UpdatePrice(string sku,long value) => editor.UpdatePrice(sku,value,admin);
+    public void AdjustStock(string sku,long delta,string reason)
+        => editor.AdjustStock(sku,delta,reason,admin);
+}
