@@ -1,5 +1,7 @@
 # Roadmap Implementasi Smart Casier
 
+**Software milestone (18 November 2026):** [POS Core .NET + CLI dan 13 tes integrasi](SOFTWARE_POS_CORE.md) sudah tersedia, build/test Windows & Linux **lulus**. Sprint berikutnya GUI Windows WPF dan CRUD katalog. Semua pekerjaan cek fisik tetap [DEFERRED_ON_SITE](EXECUTION_POLICY_SOFTWARE_ONLY.md).
+
 > **Prioritas aktif: SOFTWARE_ONLY.** [Daftar tugas kunjungan/alat fisik ditunda](EXECUTION_POLICY_SOFTWARE_ONLY.md). Software boleh dilanjutkan dengan fixture sintetis; gate fisik tetap wajib sebelum operasional toko.
 
 

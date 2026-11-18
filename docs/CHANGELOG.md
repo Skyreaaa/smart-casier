@@ -1,5 +1,13 @@
 # Catatan Progres
 
+## 2026-11-18 — Software POS Core v0.1 (CI Windows/Linux PASS)
+
+- .NET 10/C# + SQLite operasional, migrasi baru 003 untuk sales/receipt snapshots (002 tetap file DB staging terpisah).
+- Katalog/read SKU, alias dan nama; inventaris dari ledger per SKU; checkout uang tunai atomik, idempotent request, kuantitas pcs/meter, harga integer IDR.
+- CLI untuk simulasi offline (tanpa hardware) dan 13 pengujian integrasi [Windows/Linux sukses](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
+- Belum ada GUI, hardware fisik, data toko nyata, atau fulfillment pulsa. Checklist proyek global tetap 11/32.
+
+
 ## 2026-11-18 — Pivot software-only
 
 - Kunjungan toko, 30 SKU asli, pengadaan/kalibrasi hardware, kamera fisik, uji potong, pilot, dan metrologi ditandai `DEFERRED_ON_SITE` pada [kebijakan implementasi](EXECUTION_POLICY_SOFTWARE_ONLY.md).

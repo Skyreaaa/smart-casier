@@ -8,7 +8,7 @@
 ## Ringkasan terverifikasi
 
 - **11/32 checklist selesai (34%):** termasuk 5 pekerjaan fondasi database. Angka bukan persentase kesiapan aplikasi.
-- **Aplikasi POS belum dibangun.** Migrasi dan importer SQLite telah di-commit dan 11 tes database lulus di GitHub Actions; belum ada inventaris toko asli, firmware, maupun integrasi hardware.
+- **POS Core .NET + CLI demo tersedia dan diuji pada Windows/Linux; GUI kasir belum dibangun.** Migrasi dan importer SQLite telah di-commit dan 11 tes database lulus di GitHub Actions; belum ada inventaris toko asli, firmware, maupun integrasi hardware.
 - **Repository:** [Skyreaaa/smart-casier](https://github.com/Skyreaaa/smart-casier), private, branch main.
 - **Tugas aktif berikutnya:** audit 4 sumber kandidat non-makanan dan mengumpulkan 30 SKU toko nyata memakai template katalog; tidak ada sumber eksternal yang disetujui untuk impor otomatis.
 - **Risiko utama:** variasi barang tanpa barcode, ukuran benda yang mirip, satuan stok meter/pcs, ketepatan ukur untuk penetapan harga, dan kelayakan metrologi legal.
@@ -43,7 +43,7 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - [x] **SC-DAT-05** — Migrasi schema SQLite
 - [x] **SC-DAT-06** — Tes integritas database dan stok
 
-### 4. POS & inventaris — 0/6
+### 4. POS & inventaris — 0/6 (implementasi core parsial, belum semua acceptance)
 
 - [ ] **SC-POS-01** — CRUD master produk dan pencarian
 - [ ] **SC-POS-02** — Varian dan satuan pcs/meter
@@ -74,6 +74,16 @@ Status: `[x]` selesai dibahas/disediakan; `[ ]` belum selesai. Semua pekerjaan y
 - Semua bukti cek alat, SKU asli, observasi toko, akurasi dan legal metrologi dicatat `DEFERRED_ON_SITE` dalam [execution policy](EXECUTION_POLICY_SOFTWARE_ONLY.md).
 - Fase implementasi POS **diizinkan dimulai sekarang** memakai database dan data sintetis; bukan menunggu validasi fisik.
 - Dasbor 11/32 tetap merefleksikan checklist yang *benar-benar* sudah selesai; tugas fisik yang ditunda tidak dianggap selesai.
+
+## Bukti software POS Core (belum GUI)
+
+- [x] [Core .NET](../src/SmartCasier.Core) dan [CLI demo](../src/SmartCasier.Cli); migrasi [sales/receipt](../database/migrations/003_pos_sales.sql).
+- [x] Checkout lokal atomik, idempotency request, harga snapshot IDR, stok PCS/M, batas stok tidak negatif.
+- [x] [13 tes integrasi](../tests/SmartCasier.Core.SelfTests/Program.cs) pada [CI Windows + Linux (PASS)](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
+- [ ] GUI kasir, product CRUD, backup/restore, laporan lengkap, refund, payment selain tunai, role/permissions.
+- [ ] Hardware adapter dan verifikasi fisik tetap DEFERRED_ON_SITE sesuai policy.
+
+**Checklist utama 11/32 tidak dinaikkan**: kriteria POS yang mencakup UI, pengelolaan dan alur end-to-end belum selesai. Implementasi Core adalah bukti kerja parsial, bukan kelulusan fase operasional.
 
 ## Gate dan definisi selesai
 

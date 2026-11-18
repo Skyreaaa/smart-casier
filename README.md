@@ -1,12 +1,14 @@
 # Smart Casier
 
+**Implementasi software:** [POS Core .NET + CLI + cara menjalankan](docs/SOFTWARE_POS_CORE.md) · [Build & test Windows/Linux](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575)
+
 **Execution policy (18 Nov 2026):** [SOFTWARE ONLY — tugas fisik ditunda dan dicatat](docs/EXECUTION_POLICY_SOFTWARE_ONLY.md). Pengujian/pendataan fisik **bukan prasyarat implementasi software**; wajib sebelum deploy toko/komersial.
 
-> **Status: Database Foundation + Non-food Staging v0.3** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata non-makanan dari dataset asli sudah dikurasi dan ditahan untuk review hak pakai; 0 SKU toko diverifikasi dan 0 produk masuk POS**.
+> **Status: Software-Only POS Core v0.1 + Database Foundation + Non-food Staging** — skema SQLite, importer CSV, filter non-makanan, **adapter katalog Open Products Facts dan master spare part**, serta pengujian CI tersedia. **261 kandidat metadata non-makanan dari dataset asli sudah dikurasi dan ditahan untuk review hak pakai; 0 SKU toko diverifikasi dan 0 produk masuk POS**.
 
 ![Dashboard progres Smart Casier](docs/assets/progress-dashboard.svg)
 
-![Status](https://img.shields.io/badge/status-nonfood%20staging-2563eb) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-belum%20dibangun-64748b) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
+![Status](https://img.shields.io/badge/status-pos%20core%20tested-0f766e) ![Checklist](https://img.shields.io/badge/checklist-11%2F32-0f766e) ![POS](https://img.shields.io/badge/POS-core%20CLI%20ready-0f766e) ![Mode](https://img.shields.io/badge/mode-offline--first-475569)
 
 **Update terakhir:** 18 November 2026 · **Repository:** private · **Branch:** `main`
 
@@ -31,7 +33,7 @@
 | Simulator perangkat | 0/5 | ▱▱▱▱▱▱▱▱▱▱ 0% | Belum dimulai |
 | Visi komputer & pilot | 0/6 | ▱▱▱▱▱▱▱▱▱▱ 0% | Fase lanjutan |
 
-**Interpretasi:** 11 dari 32 checklist selesai (34% checklist, bukan kesiapan produksi). **Database dan pipeline staging non-makanan tersedia.** Dataset real Indonesia dalam master POS: **0 SKU terverifikasi**. Belum ada inventaris nyata, antarmuka POS, kamera AI, atau alat ukur yang bekerja.
+**Interpretasi:** 11 dari 32 checklist selesai (34% checklist, bukan kesiapan produksi). **POS Core dan CLI telah diuji pada Windows dan Linux; GUI belum tersedia.** **Database dan pipeline staging non-makanan tersedia.** Dataset real Indonesia dalam master POS: **0 SKU terverifikasi**. Belum ada inventaris nyata, antarmuka POS, kamera AI, atau alat ukur yang bekerja.
 
 ## Alur pekerjaan
 
@@ -72,6 +74,14 @@ flowchart LR
 | Quality gates | Kategori non-food, nama duplikat, barcode bila tersedia, sumber/lisensi, reviewer, audit |
 
 Pipeline dan kebijakan impor ada di [dokumen staging](docs/DATASET_STAGING.md). [Hasil ekstraksi data asli](docs/REAL_NONFOOD_INTAKE_2026-11-18.md) mencantumkan 261 kandidat yang **belum disetujui**. Dataset sintetis untuk CI bukan inventaris toko.
+
+## Software POS yang sudah tersedia
+
+- **.NET 10 + SQLite:** checkout fisik atomik, item PCS/meter, receipt snapshot, uang kembalian dan idempotensi request.
+- **Pencarian:** SKU, nama, label varian, barcode dan alias; stok habis/menipis dari ledger.
+- **CLI demo tanpa hardware:** `init`, `seed-demo`, `search`, `stock`, `checkout`.
+- **Verifikasi:** 13 skenario integrasi POS, build/test di Windows dan Linux [CI sukses](https://github.com/Skyreaaa/smart-casier/actions/runs/44276517575).
+- **Belum:** GUI kasir, CRUD lengkap, back-up/restore, device adapters fisik, produk digital/pulsa fulfillment dan data toko real.
 
 ## Tugas langsung berikutnya
 
